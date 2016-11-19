@@ -38,7 +38,7 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
       };
     },
     serebii_url () {
-      return `http://www.serebii.net/pokedex-xy/${Leftpad(this.get('national_id'), 3, 0)}.shtml`;
+      return `http://www.serebii.net/pokedex-sm/${Leftpad(this.get('national_id'), 3, 0)}.shtml`;
     },
     summary () {
       return {

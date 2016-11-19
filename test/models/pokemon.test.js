@@ -66,15 +66,15 @@ describe('pokemon model', () => {
     describe('serebii_url', () => {
 
       it('gets the Serebii link of a Pokemon with a single digit National Id', () => {
-        expect(Pokemon.forge({ national_id: '6' }).get('serebii_url')).to.eql('http://www.serebii.net/pokedex-xy/006.shtml');
+        expect(Pokemon.forge({ national_id: '6' }).get('serebii_url')).to.eql('http://www.serebii.net/pokedex-sm/006.shtml');
       });
 
       it('gets the Serebii link of a Pokemon with a two digit National Id', () => {
-        expect(Pokemon.forge({ national_id: '25' }).get('serebii_url')).to.eql('http://www.serebii.net/pokedex-xy/025.shtml');
+        expect(Pokemon.forge({ national_id: '25' }).get('serebii_url')).to.eql('http://www.serebii.net/pokedex-sm/025.shtml');
       });
 
       it('gets the Serebii link of a Pokemon with a three digit National Id', () => {
-        expect(Pokemon.forge({ national_id: '254' }).get('serebii_url')).to.eql('http://www.serebii.net/pokedex-xy/254.shtml');
+        expect(Pokemon.forge({ national_id: '254' }).get('serebii_url')).to.eql('http://www.serebii.net/pokedex-sm/254.shtml');
       });
 
     });
