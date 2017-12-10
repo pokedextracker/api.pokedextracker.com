@@ -11,5 +11,6 @@ module.exports = {
   JWT_SECRET: process.env.JWT_SECRET,
   PORT: 8647,
   SALT_ROUNDS: 10,
-  SLACK_URL: process.env.SLACK_URL
+  SLACK_URL: process.env.SLACK_URL,
+  STRIPE_API_KEY: process.env.STRIPE_API_KEY
 };

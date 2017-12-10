@@ -16,9 +16,9 @@ services:
 before_script:
   - createuser --createdb --login pokedex_tracker_user
   - createdb --owner pokedex_tracker_user pokedex_tracker
-  - yarn run migrate
+  - yarn db:migrate
 script:
   - yarn test
-  - yarn run lint
+  - yarn lint
 after_script:
-  - yarn run coveralls
+  - yarn coveralls

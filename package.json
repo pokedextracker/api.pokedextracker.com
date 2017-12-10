@@ -5,15 +5,15 @@
   "main": "src/index.js",
   "scripts": {
     "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "db:migrate": "knex migrate:latest --knexfile db/index.js",
+    "db:migrate:make": "knex migrate:make --knexfile db/index.js",
+    "db:rollback": "knex migrate:rollback --knexfile db/index.js",
     "deploy:production": "ssh ubuntu@api.pokedextracker.com ./deployments/api.pokedextracker.com.sh",
     "deploy:staging": "ssh ubuntu@staging.api.pokedextracker.com ./deployments/staging.api.pokedextracker.com.sh",
     "lint": "eslint .",
-    "migrate": "knex migrate:latest --knexfile db/index.js",
-    "migrate:make": "knex migrate:make --knexfile db/index.js",
     "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && yarn version --new-version major && git push origin && git push origin --tags",
     "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && yarn version --new-version minor && git push origin && git push origin --tags",
     "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && yarn version --new-version patch && git push origin && git push origin --tags",
-    "rollback": "knex migrate:rollback --knexfile db/index.js",
     "start": "nodemon --ignore test/",
     "test": "NODE_ENV=test istanbul cover _mocha -- test --require test/setup.js --recursive --timeout 30000",
     "test:raw": "NODE_ENV=test mocha test --require test/setup.js --recursive --timeout 30000"
@@ -35,7 +35,8 @@
     "knex": "^0.12.7",
     "newrelic": "^1.37.2",
     "pg": "^6.1.2",
-    "slug": "^0.9.1"
+    "slug": "^0.9.1",
+    "stripe": "^5.1.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",

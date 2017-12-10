@@ -40,6 +40,7 @@ describe('user model', () => {
           'username',
           'friend_code',
           'dexes',
+          'donated',
           'date_created',
           'date_modified'
         ]);

@@ -34,7 +34,12 @@ This project uses PostgreSQL as its database, so you'll need to have the role an
 $ psql postgres
 postgres=# CREATE ROLE "pokedex_tracker_user" CREATEDB CREATEUSER LOGIN;
 $ createdb -O pokedex_tracker_user pokedex_tracker
+$ yarn db:migrate
 ```
+
+### Secrets
+
+There are some secrets needed to run this repo locally, such as the Stripe API Key. Since no secrets are being checked in, you should copy `.env.example` to `.env` and populate it with all of the secrets listed there.
 
 ## Data
 

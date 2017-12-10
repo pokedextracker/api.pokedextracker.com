@@ -29,6 +29,7 @@ module.exports = Bookshelf.model('User', Bookshelf.Model.extend({
         username: this.get('username'),
         friend_code: this.get('friend_code'),
         dexes,
+        donated: Boolean(this.get('stripe_id')),
         date_created: this.get('date_created'),
         date_modified: this.get('date_modified')
       };

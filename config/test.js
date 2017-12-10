@@ -14,5 +14,6 @@ module.exports = {
   PASSWORD_VALUE: 'password',
   PORT: 8647,
   SALT_ROUNDS: 10,
-  SLACK_URL: ''
+  SLACK_URL: '',
+  STRIPE_API_KEY: process.env.STRIPE_API_KEY
 };
