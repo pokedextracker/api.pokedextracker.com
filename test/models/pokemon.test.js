@@ -1,18 +1,28 @@
 'use strict';
 
-const Knex       = require('../../src/libraries/knex');
-const GameFamily = require('../../src/models/game-family');
-const Pokemon    = require('../../src/models/pokemon');
+const Knex    = require('../../src/libraries/knex');
+const Pokemon = require('../../src/models/pokemon');
 
-const redBlue = Factory.build('game-family', { id: 'red_blue', generation: 1 });
+const redBlue    = Factory.build('game-family', { id: 'red_blue', generation: 1 });
+const goldSilver = Factory.build('game-family', { id: 'gold_silver', generation: 2 });
+const sunMoon    = Factory.build('game-family', { id: 'sun_moon', generation: 7 });
 
 const pikachu     = Factory.build('pokemon', { id: 25, national_id: 25, evolution_family_id: 25, generation: 1, alola_id: 25, game_family_id: redBlue.id });
 const raichu      = Factory.build('pokemon', { id: 26, national_id: 26, evolution_family_id: 25, generation: 1, game_family_id: redBlue.id });
-const pichu       = Factory.build('pokemon', { id: 172, national_id: 172, evolution_family_id: 25, generation: 2, alola_id: 24, game_family_id: redBlue.id });
-const alolaRaichu = Factory.build('pokemon', { id: 803, national_id: 26, evolution_family_id: 25, generation: 7, alola_id: 26, game_family_id: redBlue.id });
+const pichu       = Factory.build('pokemon', { id: 172, national_id: 172, evolution_family_id: 25, generation: 2, alola_id: 24, game_family_id: goldSilver.id });
+const alolaRaichu = Factory.build('pokemon', { id: 803, national_id: 26, evolution_family_id: 25, generation: 7, alola_id: 26, game_family_id: sunMoon.id });
 const spearow     = Factory.build('pokemon', { id: 21, national_id: 21, evolution_family_id: 21, generation: 1, game_family_id: redBlue.id });
 const fearow      = Factory.build('pokemon', { id: 22, national_id: 22, evolution_family_id: 21, generation: 1, game_family_id: redBlue.id });
 const onix        = Factory.build('pokemon', { id: 95, national_id: 95, evolution_family_id: 95, generation: 1, game_family_id: redBlue.id });
+
+const pikachuDexNumber         = Factory.build('game-family-dex-number', { pokemon_id: pikachu.id, game_family_id: redBlue.id, dex_number: 25 });
+const raichuDexNumber          = Factory.build('game-family-dex-number', { pokemon_id: raichu.id, game_family_id: redBlue.id, dex_number: 26 });
+const pichuGoldSilverDexNumber = Factory.build('game-family-dex-number', { pokemon_id: pichu.id, game_family_id: goldSilver.id, dex_number: 172 });
+const pichuSunMoonDexNumber    = Factory.build('game-family-dex-number', { pokemon_id: pichu.id, game_family_id: sunMoon.id, dex_number: 24 });
+const alolaRaichuDexNumber     = Factory.build('game-family-dex-number', { pokemon_id: alolaRaichu.id, game_family_id: sunMoon.id, dex_number: 26 });
+const spearowDexNumber         = Factory.build('game-family-dex-number', { pokemon_id: spearow.id, game_family_id: redBlue.id, dex_number: 21 });
+const fearowDexNumber          = Factory.build('game-family-dex-number', { pokemon_id: fearow.id, game_family_id: redBlue.id, dex_number: 22 });
+const onixDexNumber            = Factory.build('game-family-dex-number', { pokemon_id: onix.id, game_family_id: redBlue.id, dex_number: 95 });
 
 const levelEvolution   = Factory.build('evolution', { evolving_pokemon_id: pichu.id, evolved_pokemon_id: pikachu.id, evolution_family_id: pikachu.id, stage: 1, trigger: 'level' });
 const breedEvolution   = Factory.build('evolution', { evolving_pokemon_id: pikachu.id, evolved_pokemon_id: pichu.id, evolution_family_id: pikachu.id, stage: 1, trigger: 'breed' });
@@ -23,8 +33,9 @@ const spearowEvolution = Factory.build('evolution', { evolving_pokemon_id: spear
 describe('pokemon model', () => {
 
   beforeEach(() => {
-    return Knex('game_families').insert(redBlue)
+    return Knex('game_families').insert([redBlue, goldSilver, sunMoon])
     .then(() => Knex('pokemon').insert([pikachu, raichu, pichu, alolaRaichu, spearow, fearow, onix]))
+    .then(() => Knex('game_family_dex_numbers').insert([pikachuDexNumber, raichuDexNumber, pichuGoldSilverDexNumber, pichuSunMoonDexNumber, alolaRaichuDexNumber, spearowDexNumber, fearowDexNumber, onixDexNumber]))
     .then(() => Knex('evolutions').insert([levelEvolution, breedEvolution, stoneEvolution, alolaEvolution, spearowEvolution]));
   });
 
@@ -83,27 +94,46 @@ describe('pokemon model', () => {
 
   describe('virtuals', () => {
 
+    describe('dex_number_properties', () => {
+
+      it('converts an array of dex numbers to an object', () => {
+        return new Pokemon({ id: pichu.id }).fetch({ withRelated: Pokemon.RELATED })
+        .then((pokemon) => {
+          expect(pokemon.get('dex_number_properties')).to.eql({
+            gold_silver_id: 172,
+            sun_moon_id: 24
+          });
+        });
+      });
+
+    });
+
     describe('capture_summary', () => {
 
       it('only includes the fields needed for the tracker view', () => {
-        expect(Pokemon.forge().get('capture_summary')).to.have.all.keys([
-          'id',
-          'national_id',
-          'name',
-          'generation',
-          'game_family',
-          'form',
-          'box',
-          'kanto_id',
-          'johto_id',
-          'hoenn_id',
-          'sinnoh_id',
-          'unova_id',
-          'central_kalos_id',
-          'coastal_kalos_id',
-          'mountain_kalos_id',
-          'alola_id'
-        ]);
+        return new Pokemon({ id: pichu.id }).fetch({ withRelated: Pokemon.RELATED })
+        .then((pokemon) => {
+          expect(pokemon.get('capture_summary')).to.have.all.keys([
+            'id',
+            'national_id',
+            'name',
+            'generation',
+            'game_family',
+            'form',
+            'box',
+            'kanto_id',
+            'johto_id',
+            'hoenn_id',
+            'sinnoh_id',
+            'unova_id',
+            'central_kalos_id',
+            'coastal_kalos_id',
+            'mountain_kalos_id',
+            'alola_id',
+            'gold_silver_id',
+            'sun_moon_id'
+          ]);
+        });
       });
 
     });
@@ -198,10 +228,8 @@ describe('pokemon model', () => {
   describe('serialize', () => {
 
     it('returns the correct fields', () => {
-      const model = Pokemon.forge(pikachu);
-      model.relations.game_family = GameFamily.forge(redBlue);
-
-      return model.serialize({})
+      return new Pokemon({ id: pikachu.id }).fetch({ withRelated: Pokemon.RELATED })
+      .then((pokemon) => pokemon.serialize({}))
       .then((json) => {
         expect(json).to.have.all.keys([
           'id',
@@ -220,6 +248,7 @@ describe('pokemon model', () => {
           'coastal_kalos_id',
           'mountain_kalos_id',
           'alola_id',
+          'red_blue_id',
           'x_locations',
           'y_locations',
           'or_locations',

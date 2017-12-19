@@ -1,14 +1,18 @@
 'use strict';
 
-const Bookshelf  = require('../libraries/bookshelf');
-const Evolution  = require('./evolution');
-const GameFamily = require('./game-family');
+const Bookshelf           = require('../libraries/bookshelf');
+const Evolution           = require('./evolution');
+const GameFamily          = require('./game-family');
+const GameFamilyDexNumber = require('./game-family-dex-number');
 
 module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
   tableName: 'pokemon',
   hasTimestamps: ['date_created', 'date_modified'],
   game_family () {
     return this.belongsTo(GameFamily, 'game_family_id');
+  },
+  game_family_dex_numbers () {
+    return this.hasMany(GameFamilyDexNumber, 'pokemon_id');
   },
   evolutions (query) {
     return new Evolution()
@@ -30,8 +34,17 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
     .get('models');
   },
   virtuals: {
+    dex_number_properties () {
+      return this.related('game_family_dex_numbers')
+        .reduce((dexNumbers, dexNumber) => {
+          const numbers = Object.assign({}, dexNumbers);
+          numbers[`${dexNumber.get('game_family_id')}_id`] = dexNumber.get('dex_number');
+
+          return numbers;
+        }, {});
+    },
     capture_summary () {
-      return {
+      return Object.assign({
         id: this.get('id'),
         national_id: this.get('national_id'),
         name: this.get('name'),
@@ -48,7 +61,7 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         coastal_kalos_id: this.get('coastal_kalos_id') || undefined,
         mountain_kalos_id: this.get('mountain_kalos_id') || undefined,
         alola_id: this.get('alola_id') || undefined
-      };
+      }, this.get('dex_number_properties'));
     },
     summary () {
       return {
@@ -116,7 +129,7 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
       return family;
     })
     .then((family) => {
-      return {
+      return Object.assign({
         id: this.get('id'),
         national_id: this.get('national_id'),
         name: this.get('name'),
@@ -132,7 +145,8 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         central_kalos_id: this.get('central_kalos_id') || undefined,
         coastal_kalos_id: this.get('coastal_kalos_id') || undefined,
         mountain_kalos_id: this.get('mountain_kalos_id') || undefined,
-        alola_id: this.get('alola_id') || undefined,
+        alola_id: this.get('alola_id') || undefined
+      }, this.get('dex_number_properties'), {
         x_locations: this.get('x_locations'),
         y_locations: this.get('y_locations'),
         or_locations: this.get('or_locations'),
@@ -140,9 +154,9 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         sun_locations: this.get('sun_locations'),
         moon_locations: this.get('moon_locations'),
         evolution_family: family
-      };
+      });
     });
   }
 }, {
-  RELATED: ['game_family']
+  RELATED: ['game_family', 'game_family_dex_numbers']
 }));

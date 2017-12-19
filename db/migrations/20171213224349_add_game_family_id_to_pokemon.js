@@ -17,7 +17,7 @@ exports.up = function (Knex, Promise) {
         INNER JOIN game_families f2 ON f1.generation = f2.generation
         GROUP BY
           1, 2
-        HAVING f1.order = min(f2.order)
+        HAVING f1.order = MIN(f2.order)
       ) AS gf
       WHERE
         pokemon.generation = gf.generation
