@@ -26,6 +26,7 @@ describe('capture model', () => {
         'national_id',
         'name',
         'generation',
+        'game_family',
         'form',
         'box',
         'kanto_id',

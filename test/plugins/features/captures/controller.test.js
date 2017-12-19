@@ -8,9 +8,11 @@ const Errors     = require('../../../../src/libraries/errors');
 const Knex       = require('../../../../src/libraries/knex');
 const Pokemon    = require('../../../../src/models/pokemon');
 
-const firstPokemon      = Factory.build('pokemon', { id: 1, national_id: 1, generation: 1, alola_id: 1 });
-const secondPokemon     = Factory.build('pokemon', { id: 2, national_id: 2, generation: 1, alola_id: 2 });
-const generationPokemon = Factory.build('pokemon', { id: 3, national_id: 3, generation: 2, hoenn_id: 1 });
+const gameFamily = Factory.build('game-family');
+
+const firstPokemon      = Factory.build('pokemon', { id: 1, national_id: 1, generation: 1, alola_id: 1, game_family_id: gameFamily.id });
+const secondPokemon     = Factory.build('pokemon', { id: 2, national_id: 2, generation: 1, alola_id: 2, game_family_id: gameFamily.id });
+const generationPokemon = Factory.build('pokemon', { id: 3, national_id: 3, generation: 2, hoenn_id: 1, game_family_id: gameFamily.id });
 
 const user      = Factory.build('user');
 const otherUser = Factory.build('user');
@@ -25,10 +27,13 @@ const otherCapture = Factory.build('capture', { pokemon_id: firstPokemon.id, dex
 describe('captures controller', () => {
 
   beforeEach(() => {
-    return Bluebird.all([
-      Knex('pokemon').insert([firstPokemon, secondPokemon]),
-      Knex('users').insert([user, otherUser])
-    ])
+    return Knex('game_families').insert(gameFamily)
+    .then(() => {
+      return Bluebird.all([
+        Knex('pokemon').insert([firstPokemon, secondPokemon]),
+        Knex('users').insert([user, otherUser])
+      ]);
+    })
     .then(() => Knex('dexes').insert([dex, otherDex, regionDex]))
     .then(() => Knex('captures').insert([firstCapture, otherCapture]));
   });

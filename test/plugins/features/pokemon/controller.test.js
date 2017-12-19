@@ -4,10 +4,16 @@ const Controller = require('../../../../src/plugins/features/pokemon/controller'
 const Errors     = require('../../../../src/libraries/errors');
 const Knex       = require('../../../../src/libraries/knex');
 
-const firstPokemon  = Factory.build('pokemon');
-const secondPokemon = Factory.build('pokemon');
+const gameFamily = Factory.build('game-family');
+
+const firstPokemon  = Factory.build('pokemon', { game_family_id: gameFamily.id });
+const secondPokemon = Factory.build('pokemon', { game_family_id: gameFamily.id });
 
 describe('pokemon controller', () => {
+
+  beforeEach(() => {
+    return Knex('game_families').insert(gameFamily);
+  });
 
   describe('list', () => {
 

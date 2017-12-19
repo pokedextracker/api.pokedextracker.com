@@ -7,8 +7,10 @@ const Config = require('../../../../config');
 const Knex   = require('../../../../src/libraries/knex');
 const Server = require('../../../../src/server');
 
-const firstPokemon  = Factory.build('pokemon', { id: 1, national_id: 1 });
-const secondPokemon = Factory.build('pokemon', { id: 2, national_id: 2 });
+const gameFamily = Factory.build('game-family');
+
+const firstPokemon  = Factory.build('pokemon', { id: 1, national_id: 1, game_family_id: gameFamily.id });
+const secondPokemon = Factory.build('pokemon', { id: 2, national_id: 2, game_family_id: gameFamily.id });
 
 const user = Factory.build('user');
 
@@ -21,10 +23,13 @@ const auth = `Bearer ${JWT.sign(user, Config.JWT_SECRET)}`;
 describe('captures integration', () => {
 
   beforeEach(() => {
-    return Bluebird.all([
-      Knex('pokemon').insert([firstPokemon, secondPokemon]),
-      Knex('users').insert(user)
-    ])
+    return Knex('game_families').insert(gameFamily)
+    .then(() => {
+      return Bluebird.all([
+        Knex('pokemon').insert([firstPokemon, secondPokemon]),
+        Knex('users').insert(user)
+      ]);
+    })
     .then(() => Knex('dexes').insert(dex))
     .then(() => Knex('captures').insert(firstCapture));
   });

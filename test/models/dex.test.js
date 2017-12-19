@@ -7,8 +7,10 @@ const Knex = require('../../src/libraries/knex');
 
 const user = Factory.build('user');
 
-const firstPokemon  = Factory.build('pokemon', { id: 1, national_id: 1 });
-const secondPokemon = Factory.build('pokemon', { id: 2, national_id: 2 });
+const gameFamily = Factory.build('game-family');
+
+const firstPokemon  = Factory.build('pokemon', { id: 1, national_id: 1, game_family_id: gameFamily.id });
+const secondPokemon = Factory.build('pokemon', { id: 2, national_id: 2, game_family_id: gameFamily.id });
 
 const dex = Factory.build('dex', { user_id: user.id });
 
@@ -20,10 +22,13 @@ describe('dex model', () => {
   describe('caught', () => {
 
     beforeEach(() => {
-      return Bluebird.all([
-        Knex('users').insert(user),
-        Knex('pokemon').insert([firstPokemon, secondPokemon])
-      ])
+      return Knex('game_families').insert(gameFamily)
+      .then(() => {
+        return Bluebird.all([
+          Knex('users').insert(user),
+          Knex('pokemon').insert([firstPokemon, secondPokemon])
+        ]);
+      })
       .then(() => Knex('dexes').insert(dex))
       .then(() => Knex('captures').insert([firstCapture, secondCapture]));
     });

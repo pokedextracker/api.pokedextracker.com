@@ -1,11 +1,15 @@
 'use strict';
 
-const Bookshelf = require('../libraries/bookshelf');
-const Evolution = require('./evolution');
+const Bookshelf  = require('../libraries/bookshelf');
+const Evolution  = require('./evolution');
+const GameFamily = require('./game-family');
 
 module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
   tableName: 'pokemon',
   hasTimestamps: ['date_created', 'date_modified'],
+  game_family () {
+    return this.belongsTo(GameFamily, 'game_family_id');
+  },
   evolutions (query) {
     return new Evolution()
     .where('evolutions.evolution_family_id', this.get('evolution_family_id'))
@@ -32,6 +36,7 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         national_id: this.get('national_id'),
         name: this.get('name'),
         generation: this.get('generation'),
+        game_family: this.related('game_family').serialize(),
         form: this.get('form'),
         box: this.get('box'),
         kanto_id: this.get('kanto_id') || undefined,
@@ -116,6 +121,7 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         national_id: this.get('national_id'),
         name: this.get('name'),
         generation: this.get('generation'),
+        game_family: this.related('game_family').serialize(),
         form: this.get('form'),
         box: this.get('box'),
         kanto_id: this.get('kanto_id') || undefined,
@@ -137,4 +143,6 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
       };
     });
   }
+}, {
+  RELATED: ['game_family']
 }));

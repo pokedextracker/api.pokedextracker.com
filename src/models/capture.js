@@ -17,5 +17,5 @@ module.exports = Bookshelf.model('Capture', Bookshelf.Model.extend({
     };
   }
 }, {
-  RELATED: ['pokemon']
+  RELATED: ['pokemon', 'pokemon.game_family']
 }));

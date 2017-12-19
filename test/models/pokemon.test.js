@@ -1,15 +1,18 @@
 'use strict';
 
-const Knex    = require('../../src/libraries/knex');
-const Pokemon = require('../../src/models/pokemon');
+const Knex       = require('../../src/libraries/knex');
+const GameFamily = require('../../src/models/game-family');
+const Pokemon    = require('../../src/models/pokemon');
 
-const pikachu     = Factory.build('pokemon', { id: 25, national_id: 25, evolution_family_id: 25, generation: 1, alola_id: 25 });
-const raichu      = Factory.build('pokemon', { id: 26, national_id: 26, evolution_family_id: 25, generation: 1 });
-const pichu       = Factory.build('pokemon', { id: 172, national_id: 172, evolution_family_id: 25, generation: 2, alola_id: 24 });
-const alolaRaichu = Factory.build('pokemon', { id: 803, national_id: 26, evolution_family_id: 25, generation: 7, alola_id: 26 });
-const spearow     = Factory.build('pokemon', { id: 21, national_id: 21, evolution_family_id: 21, generation: 1 });
-const fearow      = Factory.build('pokemon', { id: 22, national_id: 22, evolution_family_id: 21, generation: 1 });
-const onix        = Factory.build('pokemon', { id: 95, national_id: 95, evolution_family_id: 95, generation: 1 });
+const redBlue = Factory.build('game-family', { id: 'red_blue', generation: 1 });
+
+const pikachu     = Factory.build('pokemon', { id: 25, national_id: 25, evolution_family_id: 25, generation: 1, alola_id: 25, game_family_id: redBlue.id });
+const raichu      = Factory.build('pokemon', { id: 26, national_id: 26, evolution_family_id: 25, generation: 1, game_family_id: redBlue.id });
+const pichu       = Factory.build('pokemon', { id: 172, national_id: 172, evolution_family_id: 25, generation: 2, alola_id: 24, game_family_id: redBlue.id });
+const alolaRaichu = Factory.build('pokemon', { id: 803, national_id: 26, evolution_family_id: 25, generation: 7, alola_id: 26, game_family_id: redBlue.id });
+const spearow     = Factory.build('pokemon', { id: 21, national_id: 21, evolution_family_id: 21, generation: 1, game_family_id: redBlue.id });
+const fearow      = Factory.build('pokemon', { id: 22, national_id: 22, evolution_family_id: 21, generation: 1, game_family_id: redBlue.id });
+const onix        = Factory.build('pokemon', { id: 95, national_id: 95, evolution_family_id: 95, generation: 1, game_family_id: redBlue.id });
 
 const levelEvolution   = Factory.build('evolution', { evolving_pokemon_id: pichu.id, evolved_pokemon_id: pikachu.id, evolution_family_id: pikachu.id, stage: 1, trigger: 'level' });
 const breedEvolution   = Factory.build('evolution', { evolving_pokemon_id: pikachu.id, evolved_pokemon_id: pichu.id, evolution_family_id: pikachu.id, stage: 1, trigger: 'breed' });
@@ -20,10 +23,9 @@ const spearowEvolution = Factory.build('evolution', { evolving_pokemon_id: spear
 describe('pokemon model', () => {
 
   beforeEach(() => {
-    return Knex('pokemon').insert([pikachu, raichu, pichu, alolaRaichu, spearow, fearow, onix])
-    .then(() => {
-      return Knex('evolutions').insert([levelEvolution, breedEvolution, stoneEvolution, alolaEvolution, spearowEvolution]);
-    });
+    return Knex('game_families').insert(redBlue)
+    .then(() => Knex('pokemon').insert([pikachu, raichu, pichu, alolaRaichu, spearow, fearow, onix]))
+    .then(() => Knex('evolutions').insert([levelEvolution, breedEvolution, stoneEvolution, alolaEvolution, spearowEvolution]));
   });
 
   describe('evolutions', () => {
@@ -89,6 +91,7 @@ describe('pokemon model', () => {
           'national_id',
           'name',
           'generation',
+          'game_family',
           'form',
           'box',
           'kanto_id',
@@ -195,13 +198,17 @@ describe('pokemon model', () => {
   describe('serialize', () => {
 
     it('returns the correct fields', () => {
-      return Pokemon.forge(pikachu).serialize({})
+      const model = Pokemon.forge(pikachu);
+      model.relations.game_family = GameFamily.forge(redBlue);
+
+      return model.serialize({})
       .then((json) => {
         expect(json).to.have.all.keys([
           'id',
           'national_id',
           'name',
           'generation',
+          'game_family',
           'form',
           'box',
           'kanto_id',
@@ -221,6 +228,7 @@ describe('pokemon model', () => {
           'moon_locations',
           'evolution_family'
         ]);
+        expect(json.game_family.id).to.eql(redBlue.id);
         expect(json.evolution_family).to.have.all.keys([
           'pokemon',
           'evolutions'

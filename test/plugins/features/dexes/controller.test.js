@@ -14,9 +14,11 @@ const secondUser = Factory.build('user');
 const firstDex  = Factory.build('dex', { user_id: firstUser.id, generation: 7 });
 const secondDex = Factory.build('dex', { user_id: firstUser.id, title: 'Another', slug: 'another' });
 
-const oldGenPokemon      = Factory.build('pokemon', { id: 1, national_id: 1, generation: firstDex.generation - 1, alola_id: 1 });
-const newGenPokemon      = Factory.build('pokemon', { id: 2, national_id: 2, generation: firstDex.generation, alola_id: 2 });
-const otherRegionPokemon = Factory.build('pokemon', { id: 3, national_id: 3, generation: firstDex.generation - 1, hoenn_id: 1 });
+const gameFamily = Factory.build('game-family');
+
+const oldGenPokemon      = Factory.build('pokemon', { id: 1, national_id: 1, generation: firstDex.generation - 1, alola_id: 1, game_family_id: gameFamily.id });
+const newGenPokemon      = Factory.build('pokemon', { id: 2, national_id: 2, generation: firstDex.generation, alola_id: 2, game_family_id: gameFamily.id });
+const otherRegionPokemon = Factory.build('pokemon', { id: 3, national_id: 3, generation: firstDex.generation - 1, hoenn_id: 1, game_family_id: gameFamily.id });
 
 const oldGenCapture      = Factory.build('capture', { pokemon_id: oldGenPokemon.id, dex_id: firstDex.id });
 const newGenCapture      = Factory.build('capture', { pokemon_id: newGenPokemon.id, dex_id: firstDex.id });
@@ -131,6 +133,7 @@ describe('dexes controller', () => {
 
     beforeEach(() => {
       return Knex('users').insert([firstUser, secondUser])
+      .then(() => Knex('game_families').insert(gameFamily))
       .then(() => Knex('pokemon').insert([oldGenPokemon, newGenPokemon, otherRegionPokemon]))
       .then(() => Knex('dexes').insert([firstDex, secondDex]))
       .then(() => Knex('captures').insert([oldGenCapture, newGenCapture, otherRegionCapture]));

@@ -3,10 +3,16 @@
 const Knex   = require('../../../../src/libraries/knex');
 const Server = require('../../../../src/server');
 
-const firstPokemon  = Factory.build('pokemon');
-const secondPokemon = Factory.build('pokemon');
+const gameFamily = Factory.build('game-family');
+
+const firstPokemon  = Factory.build('pokemon', { game_family_id: gameFamily.id });
+const secondPokemon = Factory.build('pokemon', { game_family_id: gameFamily.id });
 
 describe('pokemon integration', () => {
+
+  beforeEach(() => {
+    return Knex('game_families').insert(gameFamily);
+  });
 
   describe('list', () => {
 
