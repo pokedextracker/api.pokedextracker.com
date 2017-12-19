@@ -101,5 +101,7 @@ Session.vim
 *~
 # auto-generated tag files
 tags
+# custom .vimrc
+.vimrc
 
 # End of https://www.gitignore.io/api/vim,node,macos

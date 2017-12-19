@@ -41,6 +41,7 @@ server.register([
   require('./plugins/features/captures'),
   require('./plugins/features/dexes'),
   require('./plugins/features/donations'),
+  require('./plugins/features/games'),
   require('./plugins/features/pokemon'),
   require('./plugins/features/sessions'),
   require('./plugins/features/users')
