@@ -1,6 +1,7 @@
 'use strict';
 
 const Bookshelf = require('../libraries/bookshelf');
+const Game      = require('./game');
 const Knex      = require('../libraries/knex');
 
 const TOTALS = {
@@ -18,6 +19,9 @@ const TOTALS = {
 module.exports = Bookshelf.model('Dex', Bookshelf.Model.extend({
   tableName: 'dexes',
   hasTimestamps: ['date_created', 'date_modified'],
+  game () {
+    return this.belongsTo(Game, 'game_id');
+  },
   caught () {
     return Knex('captures').count().where('dex_id', this.get('id'))
     .then((res) => parseInt(res[0].count));
@@ -37,7 +41,9 @@ module.exports = Bookshelf.model('Dex', Bookshelf.Model.extend({
         slug: this.get('slug'),
         shiny: this.get('shiny'),
         generation: this.get('generation'),
+        game: this.related('game').serialize(),
         region: this.get('region'),
+        regional: this.get('regional'),
         caught,
         total: this.get('total'),
         date_created: this.get('date_created'),
@@ -45,4 +51,6 @@ module.exports = Bookshelf.model('Dex', Bookshelf.Model.extend({
       };
     });
   }
+}, {
+  RELATED: ['game', 'game.game_family']
 }));

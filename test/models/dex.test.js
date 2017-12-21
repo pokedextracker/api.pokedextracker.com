@@ -3,6 +3,7 @@
 const Bluebird = require('bluebird');
 
 const Dex  = require('../../src/models/dex');
+const Game = require('../../src/models/game');
 const Knex = require('../../src/libraries/knex');
 
 const user = Factory.build('user');
@@ -12,7 +13,9 @@ const gameFamily = Factory.build('game-family');
 const firstPokemon  = Factory.build('pokemon', { id: 1, national_id: 1, game_family_id: gameFamily.id });
 const secondPokemon = Factory.build('pokemon', { id: 2, national_id: 2, game_family_id: gameFamily.id });
 
-const dex = Factory.build('dex', { user_id: user.id });
+const game = Factory.build('game', { game_family_id: gameFamily.id });
+
+const dex = Factory.build('dex', { user_id: user.id, game_id: game.id });
 
 const firstCapture  = Factory.build('capture', { pokemon_id: firstPokemon.id, dex_id: dex.id });
 const secondCapture = Factory.build('capture', { pokemon_id: secondPokemon.id, dex_id: dex.id });
@@ -26,6 +29,7 @@ describe('dex model', () => {
       .then(() => {
         return Bluebird.all([
           Knex('users').insert(user),
+          Knex('games').insert(game),
           Knex('pokemon').insert([firstPokemon, secondPokemon])
         ]);
       })
@@ -57,7 +61,10 @@ describe('dex model', () => {
   describe('serialize', () => {
 
     it('returns the correct fields', () => {
-      return Dex.forge(dex).serialize()
+      const model = Dex.forge(dex);
+      model.relations.game = Game.forge(game);
+
+      return model.serialize()
       .then((json) => {
         expect(json).to.have.all.keys([
           'id',
@@ -66,12 +73,15 @@ describe('dex model', () => {
           'slug',
           'shiny',
           'generation',
+          'game',
           'region',
+          'regional',
           'caught',
           'total',
           'date_created',
           'date_modified'
         ]);
+        expect(json.game.id).to.eql(game.id);
       });
     });
 

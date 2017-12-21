@@ -42,6 +42,14 @@ exports.create = function (payload, request) {
     const xff = request.headers['x-forwarded-for'];
     const ip = xff ? xff.split(',')[0].trim() : request.info.remoteAddress;
 
+    if (payload.game === undefined && payload.generation !== undefined) {
+      payload.game = payload.generation === 6 ? 'omega_ruby' : 'sun';
+    }
+
+    if (payload.regional === undefined && payload.region !== undefined) {
+      payload.regional = payload.region !== 'national';
+    }
+
     return Knex.transaction((transacting) => {
       return new User().save({
         username: payload.username,
@@ -57,7 +65,9 @@ exports.create = function (payload, request) {
           slug: Slug(payload.title, { lower: true }),
           shiny: payload.shiny,
           generation: payload.generation,
-          region: payload.region
+          game_id: payload.game,
+          region: payload.region,
+          regional: payload.regional
         }, { transacting });
       });
     });

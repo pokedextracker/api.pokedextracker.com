@@ -13,7 +13,19 @@ const firstUser      = Factory.build('user');
 const secondUser     = Factory.build('user');
 const friendCodeUser = Factory.build('user', { friend_code: '0000-0000-0000' });
 
+const oras    = Factory.build('game-family', { id: 'omega_ruby_alpha_sapphire', order: 14 });
+const sunMoon = Factory.build('game-family', { id: 'sun_moon', order: 15 });
+
+const omegaRuby = Factory.build('game', { id: 'omega_ruby', game_family_id: oras.id });
+const sun       = Factory.build('game', { id: 'sun', game_family_id: sunMoon.id });
+const moon      = Factory.build('game', { id: 'moon', game_family_id: sunMoon.id });
+
 describe('users controller', () => {
+
+  beforeEach(() => {
+    return Knex('game_families').insert([oras, sunMoon])
+    .then(() => Knex('games').insert([omegaRuby, sun, moon]));
+  });
 
   describe('list', () => {
 
@@ -85,7 +97,9 @@ describe('users controller', () => {
     const title = 'Living Dex';
     const shiny = false;
     const generation = 6;
+    const game = moon.id;
     const region = 'national';
+    const regional = true;
 
     it('saves a user with a hashed password', () => {
       return Controller.create({ username, password, title, shiny, generation, region }, request)
@@ -134,6 +148,26 @@ describe('users controller', () => {
         expect(dex.get('slug')).to.eql('living-dex');
         expect(dex.get('generation')).to.eql(generation);
         expect(dex.get('region')).to.eql(region);
+      });
+    });
+
+    it('allows game and regional to be passed in', () => {
+      return Controller.create({ username, password, title, shiny, generation, game, region, regional }, request)
+      .then(() => new User().where('username', username).fetch())
+      .then((user) => new Dex().where('user_id', user.id).fetch())
+      .then((dex) => {
+        expect(dex.get('game_id')).to.eql(game);
+        expect(dex.get('regional')).to.eql(regional);
+      });
+    });
+
+    it('infers game and regional based on generation and region', () => {
+      return Controller.create({ username, password, title, shiny, generation: 7, region }, request)
+      .then(() => new User().where('username', username).fetch())
+      .then((user) => new Dex().where('user_id', user.id).fetch())
+      .then((dex) => {
+        expect(dex.get('game_id')).to.eql('sun');
+        expect(dex.get('regional')).to.be.false;
       });
     });
 

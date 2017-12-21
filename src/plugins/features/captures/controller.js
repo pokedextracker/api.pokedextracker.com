@@ -11,7 +11,7 @@ const Pokemon = require('../../../models/pokemon');
 exports.list = function (query, pokemon) {
   let dex;
 
-  return new Dex({ id: query.dex }).fetch({ require: true })
+  return new Dex({ id: query.dex }).fetch({ require: true, withRelated: Dex.RELATED })
   .then((d) => dex = d)
   .catch(Dex.NotFoundError, () => {
     throw new Errors.NotFound('dex');

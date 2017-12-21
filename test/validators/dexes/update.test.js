@@ -84,6 +84,32 @@ describe('dexes update validator', () => {
 
   });
 
+  describe('game', () => {
+
+    it('is optional', () => {
+      const data = { title: 'Test', shiny: false, region: 'national' };
+      const result = Joi.validate(data, DexesUpdateValidator);
+
+      expect(result.error).to.not.exist;
+    });
+
+    it('limits to 50 characters', () => {
+      const data = { title: 'Test', shiny: false, game: 'a'.repeat(51), region: 'national' };
+      const result = Joi.validate(data, DexesUpdateValidator);
+
+      expect(result.error.details[0].path).to.eql('game');
+      expect(result.error.details[0].type).to.eql('string.max');
+    });
+
+    it('trims excess whitespace', () => {
+      const data = { title: 'Test', shiny: false, game: '   a   ', region: 'national' };
+      const result = Joi.validate(data, DexesUpdateValidator);
+
+      expect(result.value.game).to.eql('a');
+    });
+
+  });
+
   describe('region', () => {
 
     it('is optional', () => {
@@ -128,6 +154,24 @@ describe('dexes update validator', () => {
 
       expect(result.error.details[0].path).to.eql('region');
       expect(result.error.details[0].type).to.eql('any.allowOnly');
+    });
+
+  });
+
+  describe('regional', () => {
+
+    it('is optional', () => {
+      const data = { title: 'Test', shiny: false, region: 'national' };
+      const result = Joi.validate(data, DexesUpdateValidator);
+
+      expect(result.error).to.not.exist;
+    });
+
+    it('is allowed', () => {
+      const data = { title: 'Test', shiny: false, region: 'national', regional: true };
+      const result = Joi.validate(data, DexesUpdateValidator);
+
+      expect(result.error).to.not.exist;
     });
 
   });

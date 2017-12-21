@@ -3,5 +3,8 @@
   "globals": {
     "expect": false,
     "Factory": false
+  },
+  "rules": {
+    "prefer-reflect": 0
   }
 }

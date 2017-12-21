@@ -8,12 +8,21 @@ const Server = require('../../../../src/server');
 
 const user = Factory.build('user');
 
+const oras = Factory.build('game-family', { id: 'omega_ruby_alpha_sapphire', order: 14 });
+
+const omegaRuby = Factory.build('game', { id: 'omega_ruby', game_family_id: oras.id });
+
 const firstDex  = Factory.build('dex', { user_id: user.id });
 const secondDex = Factory.build('dex', { user_id: user.id, title: 'Another', slug: 'another' });
 
 const auth = `Bearer ${JWT.sign(user, Config.JWT_SECRET)}`;
 
 describe('dexes integration', () => {
+
+  beforeEach(() => {
+    return Knex('game_families').insert(oras)
+    .then(() => Knex('games').insert(omegaRuby));
+  });
 
   describe('retrieve', () => {
 

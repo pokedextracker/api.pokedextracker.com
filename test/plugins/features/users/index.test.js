@@ -10,7 +10,16 @@ const User   = require('../../../../src/models/user');
 const firstUser  = Factory.build('user');
 const secondUser = Factory.build('user');
 
+const oras = Factory.build('game-family', { id: 'omega_ruby_alpha_sapphire', order: 14 });
+
+const omegaRuby = Factory.build('game', { id: 'omega_ruby', game_family_id: oras.id });
+
 describe('users integration', () => {
+
+  beforeEach(() => {
+    return Knex('game_families').insert(oras)
+    .then(() => Knex('games').insert(omegaRuby));
+  });
 
   describe('list', () => {
 
@@ -57,7 +66,11 @@ describe('users integration', () => {
         payload: {
           username: 'test',
           password: 'testtest',
-          referrer: 'http://test.com'
+          referrer: 'http://test.com',
+          title: 'Test',
+          shiny: false,
+          generation: 6,
+          region: 'national'
         }
       })
       .then((res) => {
@@ -75,7 +88,11 @@ describe('users integration', () => {
         headers: { 'X-Forwarded-For': ip },
         payload: {
           username,
-          password: 'testtest'
+          password: 'testtest',
+          title: 'Test',
+          shiny: false,
+          generation: 6,
+          region: 'national'
         }
       })
       .then(() => new User().where('username', username).fetch())
@@ -94,7 +111,11 @@ describe('users integration', () => {
         headers: { 'X-Forwarded-For': ips.join(',') },
         payload: {
           username,
-          password: 'testtest'
+          password: 'testtest',
+          title: 'Test',
+          shiny: false,
+          generation: 6,
+          region: 'national'
         }
       })
       .then(() => new User().where('username', username).fetch())
