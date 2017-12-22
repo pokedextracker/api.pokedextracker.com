@@ -18,8 +18,8 @@ const omegaRuby = Factory.build('game', { id: 'omega_ruby', game_family_id: oras
 const sun       = Factory.build('game', { id: 'sun', game_family_id: sunMoon.id });
 const moon      = Factory.build('game', { id: 'moon', game_family_id: sunMoon.id });
 
-const firstDex  = Factory.build('dex', { user_id: firstUser.id, generation: 7 });
-const secondDex = Factory.build('dex', { user_id: firstUser.id, title: 'Another', slug: 'another' });
+const firstDex  = Factory.build('dex', { user_id: firstUser.id, generation: 7, game_id: sun.id });
+const secondDex = Factory.build('dex', { user_id: firstUser.id, title: 'Another', slug: 'another', game_id: omegaRuby.id });
 
 const oldGenPokemon      = Factory.build('pokemon', { id: 1, national_id: 1, generation: firstDex.generation - 1, alola_id: 1, game_family_id: oras.id });
 const newGenPokemon      = Factory.build('pokemon', { id: 2, national_id: 2, generation: firstDex.generation, alola_id: 2, game_family_id: sunMoon.id });

@@ -12,8 +12,8 @@ const oras = Factory.build('game-family', { id: 'omega_ruby_alpha_sapphire', ord
 
 const omegaRuby = Factory.build('game', { id: 'omega_ruby', game_family_id: oras.id });
 
-const firstDex  = Factory.build('dex', { user_id: user.id });
-const secondDex = Factory.build('dex', { user_id: user.id, title: 'Another', slug: 'another' });
+const firstDex  = Factory.build('dex', { user_id: user.id, game_id: omegaRuby.id });
+const secondDex = Factory.build('dex', { user_id: user.id, title: 'Another', slug: 'another', game_id: omegaRuby.id });
 
 const auth = `Bearer ${JWT.sign(user, Config.JWT_SECRET)}`;
 

@@ -10,6 +10,8 @@ const Pokemon    = require('../../../../src/models/pokemon');
 
 const gameFamily = Factory.build('game-family');
 
+const game = Factory.build('game', { game_family_id: gameFamily.id });
+
 const firstPokemon      = Factory.build('pokemon', { id: 1, national_id: 1, generation: 1, alola_id: 1, game_family_id: gameFamily.id });
 const secondPokemon     = Factory.build('pokemon', { id: 2, national_id: 2, generation: 1, alola_id: 2, game_family_id: gameFamily.id });
 const generationPokemon = Factory.build('pokemon', { id: 3, national_id: 3, generation: 2, hoenn_id: 1, game_family_id: gameFamily.id });
@@ -17,9 +19,9 @@ const generationPokemon = Factory.build('pokemon', { id: 3, national_id: 3, gene
 const user      = Factory.build('user');
 const otherUser = Factory.build('user');
 
-const dex       = Factory.build('dex', { user_id: user.id, generation: 1 });
-const otherDex  = Factory.build('dex', { user_id: otherUser.id, generation: 1 });
-const regionDex = Factory.build('dex', { title: 'Another', slug: 'another', user_id: user.id, generation: 1, region: 'alola' });
+const dex       = Factory.build('dex', { user_id: user.id, generation: 1, game_id: game.id });
+const otherDex  = Factory.build('dex', { user_id: otherUser.id, generation: 1, game_id: game.id });
+const regionDex = Factory.build('dex', { title: 'Another', slug: 'another', user_id: user.id, generation: 1, game_id: game.id, region: 'alola' });
 
 const firstCapture = Factory.build('capture', { pokemon_id: firstPokemon.id, dex_id: dex.id });
 const otherCapture = Factory.build('capture', { pokemon_id: firstPokemon.id, dex_id: otherDex.id });
@@ -31,6 +33,7 @@ describe('captures controller', () => {
     .then(() => {
       return Bluebird.all([
         Knex('pokemon').insert([firstPokemon, secondPokemon]),
+        Knex('games').insert(game),
         Knex('users').insert([user, otherUser])
       ]);
     })

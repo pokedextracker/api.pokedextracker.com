@@ -9,12 +9,14 @@ const Server = require('../../../../src/server');
 
 const gameFamily = Factory.build('game-family');
 
+const game = Factory.build('game', { game_family_id: gameFamily.id });
+
 const firstPokemon  = Factory.build('pokemon', { id: 1, national_id: 1, game_family_id: gameFamily.id });
 const secondPokemon = Factory.build('pokemon', { id: 2, national_id: 2, game_family_id: gameFamily.id });
 
 const user = Factory.build('user');
 
-const dex = Factory.build('dex', { user_id: user.id });
+const dex = Factory.build('dex', { user_id: user.id, game_id: game.id });
 
 const firstCapture = Factory.build('capture', { pokemon_id: firstPokemon.id, dex_id: dex.id });
 
@@ -27,6 +29,7 @@ describe('captures integration', () => {
     .then(() => {
       return Bluebird.all([
         Knex('pokemon').insert([firstPokemon, secondPokemon]),
+        Knex('games').insert(game),
         Knex('users').insert(user)
       ]);
     })
