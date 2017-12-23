@@ -4,18 +4,6 @@ const Bookshelf = require('../libraries/bookshelf');
 const Game      = require('./game');
 const Knex      = require('../libraries/knex');
 
-const TOTALS = {
-  6: {
-    national: 721,
-    kalos: 457,
-    hoenn: 211
-  },
-  7: {
-    national: 820,
-    alola: 302
-  }
-};
-
 module.exports = Bookshelf.model('Dex', Bookshelf.Model.extend({
   tableName: 'dexes',
   hasTimestamps: ['date_created', 'date_modified'],
@@ -28,7 +16,11 @@ module.exports = Bookshelf.model('Dex', Bookshelf.Model.extend({
   },
   virtuals: {
     total () {
-      return TOTALS[this.get('generation')][this.get('region')];
+      if (this.get('regional')) {
+        return this.related('game').related('game_family').get('regional_total');
+      }
+
+      return this.related('game').related('game_family').get('national_total');
     }
   },
   serialize () {

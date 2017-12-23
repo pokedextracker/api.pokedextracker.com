@@ -8,7 +8,7 @@ const Knex = require('../../src/libraries/knex');
 
 const user = Factory.build('user');
 
-const gameFamily = Factory.build('game-family');
+const gameFamily = Factory.build('game-family', { regional_total: 211, national_total: 721 });
 
 const firstPokemon  = Factory.build('pokemon', { id: 1, national_id: 1, game_family_id: gameFamily.id });
 const secondPokemon = Factory.build('pokemon', { id: 2, national_id: 2, game_family_id: gameFamily.id });
@@ -48,10 +48,33 @@ describe('dex model', () => {
 
   describe('virtuals', () => {
 
+    beforeEach(() => {
+      return Knex('game_families').insert(gameFamily)
+      .then(() => {
+        return Bluebird.all([
+          Knex('users').insert(user),
+          Knex('games').insert(game)
+        ]);
+      })
+      .then(() => Knex('dexes').insert(dex));
+    });
+
     describe('total', () => {
 
-      it('gets the total pokemon in a generation and region', () => {
-        expect(Dex.forge({ generation: 6, region: 'national' }).get('total')).to.eql(721);
+      it('gets the total pokemon if it is not a regional dex', () => {
+        return new Dex({ id: dex.id }).fetch({ withRelated: Dex.RELATED })
+        .then((model) => {
+          expect(model.get('total')).to.eql(gameFamily.national_total);
+        });
+      });
+
+      it('gets the total pokemon if it is a regional dex', () => {
+        return new Dex({ id: dex.id }).fetch()
+        .then((model) => model.save({ regional: true }, { path: true }))
+        .then((model) => model.refresh({ withRelated: Dex.RELATED }, { path: true }))
+        .then((model) => {
+          expect(model.get('total')).to.eql(gameFamily.regional_total);
+        });
       });
 
     });
