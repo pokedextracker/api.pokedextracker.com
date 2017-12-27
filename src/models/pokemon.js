@@ -105,6 +105,12 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
     },
     moon_locations () {
       return this.get('moon_location') ? this.get('moon_location').split(', ') : [];
+    },
+    us_locations () {
+      return this.get('us_location') ? this.get('us_location').split(', ') : [];
+    },
+    um_locations () {
+      return this.get('um_location') ? this.get('um_location').split(', ') : [];
     }
   },
   serialize (request) {
@@ -170,6 +176,8 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         as_locations: this.get('as_locations'),
         sun_locations: this.get('sun_locations'),
         moon_locations: this.get('moon_locations'),
+        us_locations: this.get('us_locations'),
+        um_locations: this.get('um_locations'),
         evolution_family: family
       });
     });
