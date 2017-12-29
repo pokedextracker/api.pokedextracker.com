@@ -15,7 +15,16 @@ exports.create = function (payload, request) {
   })
   .then(() => {
     if (user && user.get('stripe_id')) {
-      return Stripe.customers.update(user.get('stripe_id'), { source: payload.token });
+      return Stripe.customers.update(user.get('stripe_id'), {
+        description: payload.name || auth.username,
+        email: payload.email,
+        source: payload.token,
+        metadata: {
+          id: auth.id,
+          username: auth.username,
+          name: payload.name
+        }
+      });
     }
 
     return Stripe.customers.create({
