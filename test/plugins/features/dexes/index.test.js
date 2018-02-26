@@ -57,8 +57,8 @@ describe('dexes integration', () => {
         payload: {
           title: 'Testing',
           shiny: false,
-          generation: 6,
-          region: 'national'
+          game: omegaRuby.id,
+          regional: false
         }
       })
       .then((res) => {
@@ -73,7 +73,8 @@ describe('dexes integration', () => {
         payload: {
           title: 'Testing',
           shiny: false,
-          generation: 6
+          game: omegaRuby.id,
+          regional: false
         }
       })
       .then((res) => {

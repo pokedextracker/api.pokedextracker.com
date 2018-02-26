@@ -9,10 +9,8 @@ module.exports = Joi.object().keys({
   referrer: Joi.string().empty(['', null]),
   title: Joi.string().max(300).trim().required(),
   shiny: Joi.boolean().required(),
-  generation: Joi.number().integer().min(6).max(7),
-  game: Joi.string().max(50).trim(),
-  region: Joi.string().valid(['national', 'alola']),
-  regional: Joi.boolean()
+  game: Joi.string().max(50).trim().required(),
+  regional: Joi.boolean().required()
 })
 .options({
   language: {

@@ -25,19 +25,9 @@ describe('capture model', () => {
         'id',
         'national_id',
         'name',
-        'generation',
         'game_family',
         'form',
-        'box',
-        'kanto_id',
-        'johto_id',
-        'hoenn_id',
-        'sinnoh_id',
-        'unova_id',
-        'central_kalos_id',
-        'coastal_kalos_id',
-        'mountain_kalos_id',
-        'alola_id'
+        'box'
       ]);
     });
 

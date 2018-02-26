@@ -11,29 +11,35 @@ const Knex       = require('../../../../src/libraries/knex');
 const firstUser  = Factory.build('user');
 const secondUser = Factory.build('user');
 
+const xy      = Factory.build('game-family', { id: 'x_y', order: 13 });
 const oras    = Factory.build('game-family', { id: 'omega_ruby_alpha_sapphire', order: 14 });
 const sunMoon = Factory.build('game-family', { id: 'sun_moon', order: 15 });
 
+const x         = Factory.build('game', { id: 'x', game_family_id: xy.id });
 const omegaRuby = Factory.build('game', { id: 'omega_ruby', game_family_id: oras.id });
 const sun       = Factory.build('game', { id: 'sun', game_family_id: sunMoon.id });
 const moon      = Factory.build('game', { id: 'moon', game_family_id: sunMoon.id });
 
-const firstDex  = Factory.build('dex', { user_id: firstUser.id, generation: 7, game_id: sun.id });
+const firstDex  = Factory.build('dex', { user_id: firstUser.id, game_id: sun.id });
 const secondDex = Factory.build('dex', { user_id: firstUser.id, title: 'Another', slug: 'another', game_id: omegaRuby.id });
 
-const oldGenPokemon      = Factory.build('pokemon', { id: 1, national_id: 1, generation: firstDex.generation - 1, alola_id: 1, game_family_id: oras.id });
-const newGenPokemon      = Factory.build('pokemon', { id: 2, national_id: 2, generation: firstDex.generation, alola_id: 2, game_family_id: sunMoon.id });
-const otherRegionPokemon = Factory.build('pokemon', { id: 3, national_id: 3, generation: firstDex.generation - 1, hoenn_id: 1, game_family_id: oras.id });
+const oldGenPokemon      = Factory.build('pokemon', { id: 1, national_id: 1, game_family_id: oras.id });
+const newGenPokemon      = Factory.build('pokemon', { id: 2, national_id: 2, game_family_id: sunMoon.id });
+const otherRegionPokemon = Factory.build('pokemon', { id: 3, national_id: 3, game_family_id: xy.id });
 
 const oldGenCapture      = Factory.build('capture', { pokemon_id: oldGenPokemon.id, dex_id: firstDex.id });
 const newGenCapture      = Factory.build('capture', { pokemon_id: newGenPokemon.id, dex_id: firstDex.id });
 const otherRegionCapture = Factory.build('capture', { pokemon_id: otherRegionPokemon.id, dex_id: firstDex.id });
 
+const oldGenDexNumber      = Factory.build('game-family-dex-number', { pokemon_id: oldGenPokemon.id, game_family_id: oras.id });
+const newGenDexNumber      = Factory.build('game-family-dex-number', { pokemon_id: newGenPokemon.id, game_family_id: sunMoon.id });
+const otherRegionDexNumber = Factory.build('game-family-dex-number', { pokemon_id: otherRegionPokemon.id, game_family_id: xy.id });
+
 describe('dexes controller', () => {
 
   beforeEach(() => {
-    return Knex('game_families').insert([oras, sunMoon])
-    .then(() => Knex('games').insert([omegaRuby, sun, moon]));
+    return Knex('game_families').insert([xy, oras, sunMoon])
+    .then(() => Knex('games').insert([x, omegaRuby, sun, moon]));
   });
 
   describe('retrieve', () => {
@@ -74,9 +80,7 @@ describe('dexes controller', () => {
     const secondParams = { username: secondUser.username };
     const title = 'Test';
     const shiny = false;
-    const generation = 6;
     const game = moon.id;
-    const region = 'national';
     const regional = true;
 
     beforeEach(() => {
@@ -84,36 +88,18 @@ describe('dexes controller', () => {
     });
 
     it('saves a dex', () => {
-      return Controller.create(firstParams, { title, shiny, generation, region }, firstUser)
+      return Controller.create(firstParams, { title, shiny, game, regional }, firstUser)
       .then((dex) => new Dex({ id: dex.get('id') }).fetch())
       .then((dex) => {
         expect(dex.get('title')).to.eql(title);
         expect(dex.get('shiny')).to.eql(shiny);
-        expect(dex.get('generation')).to.eql(generation);
-        expect(dex.get('region')).to.eql(region);
-      });
-    });
-
-    it('allows game and regional to be passed in', () => {
-      return Controller.create(firstParams, { title, shiny, generation, game, region, regional }, firstUser)
-      .then((dex) => new Dex({ id: dex.get('id') }).fetch())
-      .then((dex) => {
         expect(dex.get('game_id')).to.eql(game);
         expect(dex.get('regional')).to.eql(regional);
       });
     });
 
-    it('infers game and regional based on generation and region', () => {
-      return Controller.create(firstParams, { title, shiny, generation: 7, region }, firstUser)
-      .then((dex) => new Dex({ id: dex.get('id') }).fetch())
-      .then((dex) => {
-        expect(dex.get('game_id')).to.eql('sun');
-        expect(dex.get('regional')).to.be.false;
-      });
-    });
-
     it('rejects if trying to create a dex without a slug', () => {
-      return Controller.create(firstParams, { title: '为什么', shiny, generation, region }, firstUser)
+      return Controller.create(firstParams, { title: '为什么', shiny, game, regional }, firstUser)
       .catch((err) => err)
       .then((err) => {
         expect(err).to.be.an.instanceof(Errors.EmptySlug);
@@ -121,7 +107,7 @@ describe('dexes controller', () => {
     });
 
     it('rejects if trying to create a dex for another user', () => {
-      return Controller.create(secondParams, { title, shiny, generation, region }, firstUser)
+      return Controller.create(secondParams, { title, shiny, game, regional }, firstUser)
       .catch((err) => err)
       .then((err) => {
         expect(err).to.be.an.instanceof(Errors.ForbiddenAction);
@@ -130,7 +116,7 @@ describe('dexes controller', () => {
 
     it('rejects if the title is already taken by the user', () => {
       return Knex('dexes').insert(firstDex)
-      .then(() => Controller.create(firstParams, { title: firstDex.title, shiny, generation, region }, firstUser))
+      .then(() => Controller.create(firstParams, { title: firstDex.title, shiny, game, regional }, firstUser))
       .catch((err) => err)
       .then((err) => {
         expect(err).to.be.an.instanceof(Errors.ExistingDex);
@@ -140,7 +126,7 @@ describe('dexes controller', () => {
     it('rejects if the slug is taken after the fetch', () => {
       Sinon.stub(Dex.prototype, 'save').throws(new Error('duplicate key value'));
 
-      return Controller.create(firstParams, { title, shiny, generation, region }, firstUser)
+      return Controller.create(firstParams, { title, shiny, game, regional }, firstUser)
       .catch((err) => err)
       .then((err) => {
         expect(err).to.be.an.instanceof(Errors.ExistingDex);
@@ -158,14 +144,13 @@ describe('dexes controller', () => {
     const secondParams = { username: secondUser.username, slug: 'other' };
     const title = 'Test';
     const shiny = true;
-    const generation = oldGenPokemon.generation;
-    const game = moon.id;
-    const region = 'alola';
+    const game = omegaRuby.id;
     const regional = true;
 
     beforeEach(() => {
       return Knex('users').insert([firstUser, secondUser])
       .then(() => Knex('pokemon').insert([oldGenPokemon, newGenPokemon, otherRegionPokemon]))
+      .then(() => Knex('game_family_dex_numbers').insert([oldGenDexNumber, newGenDexNumber, otherRegionDexNumber]))
       .then(() => Knex('dexes').insert([firstDex, secondDex]))
       .then(() => Knex('captures').insert([oldGenCapture, newGenCapture, otherRegionCapture]));
     });
@@ -178,24 +163,6 @@ describe('dexes controller', () => {
       });
     });
 
-    it('allows game and regional to be passed in', () => {
-      return Controller.update(firstParams, { game, regional }, firstUser)
-      .then((dex) => new Dex({ id: dex.get('id') }).fetch())
-      .then((dex) => {
-        expect(dex.get('game_id')).to.eql(game);
-        expect(dex.get('regional')).to.eql(regional);
-      });
-    });
-
-    it('infers game and regional based on generation and region', () => {
-      return Controller.update(firstParams, { generation: 7, region }, firstUser)
-      .then((dex) => new Dex({ id: dex.get('id') }).fetch())
-      .then((dex) => {
-        expect(dex.get('game_id')).to.eql('sun');
-        expect(dex.get('regional')).to.be.true;
-      });
-    });
-
     it('updates the slug if the title is also being updated', () => {
       return Controller.update(firstParams, { title }, firstUser)
       .then((dex) => new Dex({ id: dex.get('id') }).fetch())
@@ -205,36 +172,36 @@ describe('dexes controller', () => {
       });
     });
 
-    it('clears out newer generation captures if generation is being updated', () => {
-      return Controller.update(firstParams, { generation }, firstUser)
-      .then((dex) => new Capture().where('dex_id', dex.get('id')).fetchAll({ withRelated: 'pokemon' }))
+    it('clears out newer generation captures if game is being updated', () => {
+      return Controller.update(firstParams, { game }, firstUser)
+      .then((dex) => new Capture().where('dex_id', dex.get('id')).fetchAll({ withRelated: Capture.RELATED }))
       .then((captures) => {
         expect(captures).to.have.length(2);
         captures.each((capture) => {
-          expect(capture.related('pokemon').get('generation')).to.eql(generation);
+          expect(capture.related('pokemon').related('game_family').get('order')).to.be.at.most(oras.order);
         });
       });
     });
 
-    it('clears out captures outside of the region if region is being updated', () => {
-      return Controller.update(firstParams, { region }, firstUser)
-      .then((dex) => new Capture().where('dex_id', dex.get('id')).fetchAll({ withRelated: 'pokemon' }))
-      .then((captures) => {
-        expect(captures).to.have.length(2);
-        captures.each((capture) => {
-          expect(capture.related('pokemon').get(`${region}_id`)).to.exist;
-        });
-      });
-    });
-
-    it('clears out captures outside of the region and are of a newer generation if region and generation is being updated', () => {
-      return Controller.update(firstParams, { generation, region }, firstUser)
-      .then((dex) => new Capture().where('dex_id', dex.get('id')).fetchAll({ withRelated: 'pokemon' }))
+    it('clears out captures outside of the region if regional is being updated', () => {
+      return Controller.update(firstParams, { regional }, firstUser)
+      .then((dex) => new Capture().where('dex_id', dex.get('id')).fetchAll({ withRelated: Capture.RELATED }))
       .then((captures) => {
         expect(captures).to.have.length(1);
         captures.each((capture) => {
-          expect(capture.related('pokemon').get('generation')).to.eql(generation);
-          expect(capture.related('pokemon').get(`${region}_id`)).to.exist;
+          expect(capture.related('pokemon').get('dex_number_properties')[`${sunMoon.id}_id`]).to.exist;
+        });
+      });
+    });
+
+    it('clears out captures outside of the region and are of a newer generation if regional and game is being updated', () => {
+      return Controller.update(firstParams, { game, regional }, firstUser)
+      .then((dex) => new Capture().where('dex_id', dex.get('id')).fetchAll({ withRelated: Capture.RELATED }))
+      .then((captures) => {
+        expect(captures).to.have.length(1);
+        captures.each((capture) => {
+          expect(capture.related('pokemon').get('game_family_id')).to.eql(oras.id);
+          expect(capture.related('pokemon').get('dex_number_properties')[`${oras.id}_id`]).to.exist;
         });
       });
     });

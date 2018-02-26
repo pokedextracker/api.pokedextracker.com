@@ -23,9 +23,6 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
       qb.joinRaw('INNER JOIN game_families AS evolved_game_family ON evolved.game_family_id = evolved_game_family.id');
       qb.joinRaw('INNER JOIN game_families AS evolving_game_family ON evolving.game_family_id = evolving_game_family.id');
 
-      if (query.generation) {
-        qb.whereRaw(`evolved.generation <= ${query.generation} AND evolving.generation <= ${query.generation}`);
-      }
       if (query.game_family) {
         qb.whereRaw(`
           evolved_game_family.order <= (
@@ -35,9 +32,6 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
             SELECT "order" FROM game_families WHERE id = ?
           )
         `, [query.game_family, query.game_family]);
-      }
-      if (query.region) {
-        qb.whereRaw(`evolved.${query.region}_id IS NOT NULL AND evolving.${query.region}_id IS NOT NULL`);
       }
       if (query.regional) {
         qb.joinRaw('LEFT OUTER JOIN game_family_dex_numbers AS evolved_dex_numbers ON evolved.id = evolved_dex_numbers.pokemon_id');
@@ -65,19 +59,9 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         id: this.get('id'),
         national_id: this.get('national_id'),
         name: this.get('name'),
-        generation: this.get('generation'),
         game_family: this.related('game_family').serialize(),
         form: this.get('form'),
-        box: this.get('box'),
-        kanto_id: this.get('kanto_id') || undefined,
-        johto_id: this.get('johto_id') || undefined,
-        hoenn_id: this.get('hoenn_id') || undefined,
-        sinnoh_id: this.get('sinnoh_id') || undefined,
-        unova_id: this.get('unova_id') || undefined,
-        central_kalos_id: this.get('central_kalos_id') || undefined,
-        coastal_kalos_id: this.get('coastal_kalos_id') || undefined,
-        mountain_kalos_id: this.get('mountain_kalos_id') || undefined,
-        alola_id: this.get('alola_id') || undefined
+        box: this.get('box')
       }, this.get('dex_number_properties'));
     },
     summary () {
@@ -156,19 +140,9 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         id: this.get('id'),
         national_id: this.get('national_id'),
         name: this.get('name'),
-        generation: this.get('generation'),
         game_family: this.related('game_family').serialize(),
         form: this.get('form'),
-        box: this.get('box'),
-        kanto_id: this.get('kanto_id') || undefined,
-        johto_id: this.get('johto_id') || undefined,
-        hoenn_id: this.get('hoenn_id') || undefined,
-        sinnoh_id: this.get('sinnoh_id') || undefined,
-        unova_id: this.get('unova_id') || undefined,
-        central_kalos_id: this.get('central_kalos_id') || undefined,
-        coastal_kalos_id: this.get('coastal_kalos_id') || undefined,
-        mountain_kalos_id: this.get('mountain_kalos_id') || undefined,
-        alola_id: this.get('alola_id') || undefined
+        box: this.get('box')
       }, this.get('dex_number_properties'), {
         x_locations: this.get('x_locations'),
         y_locations: this.get('y_locations'),

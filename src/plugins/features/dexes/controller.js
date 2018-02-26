@@ -40,14 +40,6 @@ exports.create = function (params, payload, auth) {
       throw new Errors.ExistingDex();
     }
 
-    if (payload.game === undefined && payload.generation !== undefined) {
-      payload.game = payload.generation === 6 ? 'omega_ruby' : 'sun';
-    }
-
-    if (payload.regional === undefined && payload.region !== undefined) {
-      payload.regional = payload.region !== 'national';
-    }
-
     payload.game_id = payload.game;
     delete payload.game;
 
@@ -66,14 +58,6 @@ exports.update = function (params, payload, auth) {
       throw new Errors.ForbiddenAction('updating a dex for this user');
     }
 
-    if (payload.game === undefined && payload.generation !== undefined) {
-      payload.game = payload.generation === 6 ? 'omega_ruby' : 'sun';
-    }
-
-    if (payload.regional === undefined && payload.region !== undefined) {
-      payload.regional = payload.region !== 'national';
-    }
-
     return Bluebird.all([
       new Dex().where({ user_id: auth.id, slug: params.slug }).fetch({ require: true, withRelated: ['game'] }),
       payload.game && new Game({ id: payload.game }).fetch({ require: true, withRelated: ['game_family'] })
@@ -90,28 +74,28 @@ exports.update = function (params, payload, auth) {
 
     let captures;
 
-    if (payload.generation || payload.region) {
+    if (game || payload.regional) {
       captures = new Capture().query((qb) => {
         qb.where('dex_id', dex.get('id'));
-        qb.whereIn('pokemon_id', function () {
+
+        qb.andWhere(function () {
           const gameFamilyId = game ? game.get('game_family_id') : dex.related('game').get('game_family_id');
 
-          this.select('pokemon.id').from('pokemon');
-          if (payload.generation) {
-            this.where('pokemon.generation', '>', payload.generation);
-          }
           if (game) {
-            this.innerJoin('game_families', 'pokemon.game_family_id', 'game_families.id');
-            this.where('game_families.order', '>', game.related('game_family').get('order'));
-          }
-          if (payload.region) {
-            this.orWhereNull(`pokemon.${payload.region}_id`);
+            this.whereIn('pokemon_id', function () {
+              this.select('pokemon.id').from('pokemon');
+              this.innerJoin('game_families', 'pokemon.game_family_id', 'game_families.id');
+              this.where('game_families.order', '>', game.related('game_family').get('order'));
+            });
           }
           if (payload.regional && gameFamilyId) {
-            this.leftOuterJoin('game_family_dex_numbers', 'pokemon.id', 'game_family_dex_numbers.pokemon_id');
-            this.havingRaw('EVERY(game_family_dex_numbers.game_family_id != ? OR game_family_dex_numbers.game_family_id IS NULL)', [gameFamilyId]);
+            this.orWhereIn('pokemon_id', function () {
+              this.select('pokemon.id').from('pokemon');
+              this.leftOuterJoin('game_family_dex_numbers', 'pokemon.id', 'game_family_dex_numbers.pokemon_id');
+              this.havingRaw('EVERY(game_family_dex_numbers.game_family_id != ? OR game_family_dex_numbers.game_family_id IS NULL)', [gameFamilyId]);
+              this.groupBy('pokemon.id');
+            });
           }
-          this.groupBy('pokemon.id');
         });
       });
     }

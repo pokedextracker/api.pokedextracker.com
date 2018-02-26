@@ -8,25 +8,26 @@ const Errors     = require('../../../../src/libraries/errors');
 const Knex       = require('../../../../src/libraries/knex');
 const Pokemon    = require('../../../../src/models/pokemon');
 
-const firstGameFamily  = Factory.build('game-family');
-const secondGameFamily = Factory.build('game-family');
+const oras    = Factory.build('game-family', { id: 'omega_ruby_alpha_sapphire', order: 14 });
+const sunMoon = Factory.build('game-family', { id: 'sun_moon', order: 15 });
 
-const game = Factory.build('game', { game_family_id: firstGameFamily.id });
+const omegaRuby = Factory.build('game', { id: 'omega_ruby', game_family_id: oras.id });
+const sun       = Factory.build('game', { id: 'sun', game_family_id: sunMoon.id });
 
-const firstPokemon      = Factory.build('pokemon', { id: 1, national_id: 1, generation: 1, alola_id: 1, game_family_id: firstGameFamily.id });
-const secondPokemon     = Factory.build('pokemon', { id: 2, national_id: 2, generation: 1, alola_id: 2, game_family_id: firstGameFamily.id });
-const generationPokemon = Factory.build('pokemon', { id: 3, national_id: 3, generation: 2, hoenn_id: 1, game_family_id: secondGameFamily.id });
+const firstPokemon     = Factory.build('pokemon', { id: 1, national_id: 1, game_family_id: oras.id });
+const secondPokemon    = Factory.build('pokemon', { id: 2, national_id: 2, game_family_id: oras.id });
+const otherGamePokemon = Factory.build('pokemon', { id: 3, national_id: 3, game_family_id: sunMoon.id });
 
-const firstDexNumber      = Factory.build('game-family-dex-number', { pokemon_id: firstPokemon.id, game_family_id: firstGameFamily.id, dex_number: 1 });
-const secondDexNumber     = Factory.build('game-family-dex-number', { pokemon_id: secondPokemon.id, game_family_id: firstGameFamily.id, dex_number: 2 });
-const generationDexNumber = Factory.build('game-family-dex-number', { pokemon_id: generationPokemon.id, game_family_id: secondGameFamily.id, dex_number: 1 });
+const firstDexNumber     = Factory.build('game-family-dex-number', { pokemon_id: firstPokemon.id, game_family_id: oras.id });
+const secondDexNumber    = Factory.build('game-family-dex-number', { pokemon_id: secondPokemon.id, game_family_id: oras.id });
+const otherGameDexNumber = Factory.build('game-family-dex-number', { pokemon_id: otherGamePokemon.id, game_family_id: sunMoon.id });
 
 const user      = Factory.build('user');
 const otherUser = Factory.build('user');
 
-const dex       = Factory.build('dex', { user_id: user.id, generation: 1, game_id: game.id });
-const otherDex  = Factory.build('dex', { user_id: otherUser.id, generation: 1, game_id: game.id });
-const regionDex = Factory.build('dex', { title: 'Another', slug: 'another', user_id: user.id, generation: 1, game_id: game.id, region: 'alola', regional: true });
+const dex         = Factory.build('dex', { user_id: user.id, game_id: omegaRuby.id });
+const otherDex    = Factory.build('dex', { user_id: otherUser.id, game_id: omegaRuby.id });
+const regionalDex = Factory.build('dex', { title: 'Another', slug: 'another', user_id: user.id, game_id: omegaRuby.id, regional: true });
 
 const firstCapture = Factory.build('capture', { pokemon_id: firstPokemon.id, dex_id: dex.id });
 const otherCapture = Factory.build('capture', { pokemon_id: firstPokemon.id, dex_id: otherDex.id });
@@ -34,17 +35,17 @@ const otherCapture = Factory.build('capture', { pokemon_id: firstPokemon.id, dex
 describe('captures controller', () => {
 
   beforeEach(() => {
-    return Knex('game_families').insert([firstGameFamily, secondGameFamily])
+    return Knex('game_families').insert([oras, sunMoon])
     .then(() => {
       return Bluebird.all([
         Knex('pokemon').insert([firstPokemon, secondPokemon]),
-        Knex('games').insert(game),
+        Knex('games').insert([omegaRuby, sun]),
         Knex('users').insert([user, otherUser])
       ]);
     })
     .then(() => {
       return Bluebird.all([
-        Knex('dexes').insert([dex, otherDex, regionDex]),
+        Knex('dexes').insert([dex, otherDex, regionalDex]),
         Knex('game_family_dex_numbers').insert([firstDexNumber, secondDexNumber])
       ]);
     })
@@ -69,9 +70,9 @@ describe('captures controller', () => {
       });
     });
 
-    it('filters out pokemon that are not included in the dex\'s generation', () => {
-      return Knex('pokemon').insert(generationPokemon)
-      .then(() => Knex('game_family_dex_numbers').insert(generationDexNumber))
+    it('filters out pokemon that are not included in the dex\'s game', () => {
+      return Knex('pokemon').insert(otherGamePokemon)
+      .then(() => Knex('game_family_dex_numbers').insert(otherGameDexNumber))
       .then(() => new Pokemon().query((qb) => qb.orderBy('id')).fetchAll({ withRelated: Pokemon.RELATED }))
       .get('models')
       .then((pokemon) => Controller.list({ dex: dex.id }, pokemon))
@@ -79,20 +80,21 @@ describe('captures controller', () => {
       .map((capture) => capture.pokemon.id)
       .then((captures) => {
         expect(captures).to.have.length(2);
-        expect(captures).to.not.contain(generationPokemon.id);
+        expect(captures).to.not.contain(otherGamePokemon.id);
       });
     });
 
-    it('filters out pokemon that are not included in the dex\'s region', () => {
-      return Knex('pokemon').insert(generationPokemon)
+    it('filters out pokemon that are not included in the dex\'s regional status', () => {
+      return Knex('pokemon').insert(otherGamePokemon)
+      .then(() => Knex('game_family_dex_numbers').insert(otherGameDexNumber))
       .then(() => new Pokemon().query((qb) => qb.orderBy('id')).fetchAll({ withRelated: Pokemon.RELATED }))
       .get('models')
-      .then((pokemon) => Controller.list({ dex: regionDex.id }, pokemon))
+      .then((pokemon) => Controller.list({ dex: regionalDex.id }, pokemon))
       .map((capture) => capture.serialize())
       .then((captures) => {
         expect(captures).to.have.length(2);
         captures.forEach((capture) => {
-          expect(capture.pokemon[`${regionDex.region}_id`]).to.exist;
+          expect(capture.pokemon[`${oras.id}_id`]).to.exist;
         });
       });
     });

@@ -87,7 +87,7 @@ describe('donations controller', () => {
       });
     });
 
-    it('saves the stripe_id to the user if they are signed in', () => {
+    it('updates the Stripe customer if one already exists', () => {
       sandbox.spy(Stripe.customers, 'update');
 
       return Stripe.customers.create()

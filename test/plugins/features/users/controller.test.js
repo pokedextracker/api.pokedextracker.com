@@ -96,13 +96,11 @@ describe('users controller', () => {
     const password = 'test';
     const title = 'Living Dex';
     const shiny = false;
-    const generation = 6;
     const game = moon.id;
-    const region = 'national';
     const regional = true;
 
     it('saves a user with a hashed password', () => {
-      return Controller.create({ username, password, title, shiny, generation, region }, request)
+      return Controller.create({ username, password, title, shiny, game, regional }, request)
       .then(() => new User().where('username', username).fetch())
       .then((user) => {
         expect(user.get('password')).to.not.eql(password);
@@ -111,7 +109,7 @@ describe('users controller', () => {
     });
 
     it('returns a session with a user token', () => {
-      return Controller.create({ username, password, title, shiny, generation, region }, request)
+      return Controller.create({ username, password, title, shiny, game, regional }, request)
       .then((session) => {
         expect(session.token).to.be.a('string');
 
@@ -122,7 +120,7 @@ describe('users controller', () => {
     });
 
     it('saves last login date', () => {
-      return Controller.create({ username, password, title, shiny, generation, region }, request)
+      return Controller.create({ username, password, title, shiny, game, regional }, request)
       .then(() => new User().where('username', username).fetch())
       .then((user) => {
         expect(user.get('last_login')).to.be.an.instanceof(Date);
@@ -132,7 +130,7 @@ describe('users controller', () => {
     it('saves referrer', () => {
       const referrer = 'http://test.com';
 
-      return Controller.create({ username, password, referrer, title, shiny, generation, region }, request)
+      return Controller.create({ username, password, referrer, title, shiny, game, regional }, request)
       .then(() => new User().where('username', username).fetch())
       .then((user) => {
         expect(user.get('referrer')).to.eql(referrer);
@@ -140,40 +138,20 @@ describe('users controller', () => {
     });
 
     it('saves a default dex', () => {
-      return Controller.create({ username, password, title, shiny, generation, region }, request)
+      return Controller.create({ username, password, title, shiny, game, regional }, request)
       .then(() => new User().where('username', username).fetch())
       .then((user) => new Dex().where('user_id', user.id).fetch())
       .then((dex) => {
         expect(dex.get('title')).to.eql(title);
         expect(dex.get('slug')).to.eql('living-dex');
-        expect(dex.get('generation')).to.eql(generation);
-        expect(dex.get('region')).to.eql(region);
-      });
-    });
-
-    it('allows game and regional to be passed in', () => {
-      return Controller.create({ username, password, title, shiny, generation, game, region, regional }, request)
-      .then(() => new User().where('username', username).fetch())
-      .then((user) => new Dex().where('user_id', user.id).fetch())
-      .then((dex) => {
         expect(dex.get('game_id')).to.eql(game);
         expect(dex.get('regional')).to.eql(regional);
       });
     });
 
-    it('infers game and regional based on generation and region', () => {
-      return Controller.create({ username, password, title, shiny, generation: 7, region }, request)
-      .then(() => new User().where('username', username).fetch())
-      .then((user) => new Dex().where('user_id', user.id).fetch())
-      .then((dex) => {
-        expect(dex.get('game_id')).to.eql('sun');
-        expect(dex.get('regional')).to.be.false;
-      });
-    });
-
     it('rejects if the username is already taken', () => {
       return Knex('users').insert(firstUser)
-      .then(() => Controller.create({ username: firstUser.username, password, title, shiny, generation, region }, request))
+      .then(() => Controller.create({ username: firstUser.username, password, title, shiny, game, regional }, request))
       .catch((err) => err)
       .then((err) => {
         expect(err).to.be.an.instanceof(Errors.ExistingUsername);
@@ -183,7 +161,7 @@ describe('users controller', () => {
     it('rejects if the username is taken after the fetch', () => {
       Sinon.stub(User.prototype, 'save').throws(new Error('duplicate key value'));
 
-      return Controller.create({ username: firstUser.username, password, title, shiny, generation, region }, request)
+      return Controller.create({ username: firstUser.username, password, title, shiny, game, regional }, request)
       .catch((err) => err)
       .then((err) => {
         expect(err).to.be.an.instanceof(Errors.ExistingUsername);

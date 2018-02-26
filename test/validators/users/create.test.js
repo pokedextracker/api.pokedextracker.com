@@ -9,7 +9,7 @@ describe('users create validator', () => {
   describe('username', () => {
 
     it('is required', () => {
-      const data = { password: 'testtest', title: 'Test', shiny: false };
+      const data = { password: 'testtest', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error.details[0].path).to.eql('username');
@@ -17,14 +17,14 @@ describe('users create validator', () => {
     });
 
     it('allows alpha-numeric and underscore characters', () => {
-      const data = { username: 'test_TEST', password: 'testtest', title: 'Test', shiny: false };
+      const data = { username: 'test_TEST', password: 'testtest', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error).to.not.exist;
     });
 
     it('disallows anything besides alpha-numeric and underscore characters', () => {
-      const data = { username: 'test-TEST', password: 'testtest', title: 'Test', shiny: false };
+      const data = { username: 'test-TEST', password: 'testtest', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error.details[0].path).to.eql('username');
@@ -32,7 +32,7 @@ describe('users create validator', () => {
     });
 
     it('limits to 20 characters', () => {
-      const data = { username: 'a'.repeat(21), password: 'testtest', title: 'Test', shiny: false };
+      const data = { username: 'a'.repeat(21), password: 'testtest', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error.details[0].path).to.eql('username');
@@ -41,7 +41,7 @@ describe('users create validator', () => {
 
     it('trims whitespace', () => {
       const username = '  testing ';
-      const data = { username, password: 'testtest', title: 'Test', shiny: false };
+      const data = { username, password: 'testtest', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.value.username).to.eql(username.trim());
@@ -52,7 +52,7 @@ describe('users create validator', () => {
   describe('password', () => {
 
     it('is required', () => {
-      const data = { username: 'testing', title: 'Test', shiny: false };
+      const data = { username: 'testing', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error.details[0].path).to.eql('password');
@@ -60,7 +60,7 @@ describe('users create validator', () => {
     });
 
     it('requires at least 8 characters', () => {
-      const data = { username: 'testing', password: 'a'.repeat(7), title: 'Test', shiny: false };
+      const data = { username: 'testing', password: 'a'.repeat(7), title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error.details[0].path).to.eql('password');
@@ -68,7 +68,7 @@ describe('users create validator', () => {
     });
 
     it('limits to 72 characters', () => {
-      const data = { username: 'testing', password: 'a'.repeat(73), title: 'Test', shiny: false };
+      const data = { username: 'testing', password: 'a'.repeat(73), title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error.details[0].path).to.eql('password');
@@ -80,35 +80,35 @@ describe('users create validator', () => {
   describe('friend_code', () => {
 
     it('is optional', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false };
+      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error).to.not.exist;
     });
 
     it('converts null to undefined', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: null, title: 'Test', shiny: false };
+      const data = { username: 'testing', password: 'testtest', friend_code: null, title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.value.friend_code).to.be.undefined;
     });
 
     it('converts the empty string to undefined', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '', title: 'Test', shiny: false };
+      const data = { username: 'testing', password: 'testtest', friend_code: '', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.value.friend_code).to.be.undefined;
     });
 
     it('allows codes in the format of 1234-1234-1234', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', title: 'Test', shiny: false };
+      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error).to.not.exist;
     });
 
     it('disallows codes not in the format of 1234-1234-1234', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '234-1234-1234', title: 'Test', shiny: false };
+      const data = { username: 'testing', password: 'testtest', friend_code: '234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error.details[0].path).to.eql('friend_code');
@@ -121,14 +121,14 @@ describe('users create validator', () => {
   describe('referrer', () => {
 
     it('is optional', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', title: 'Test', shiny: false };
+      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error).to.not.exist;
     });
 
     it('can be a string', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', referrer: 'http://test.com', title: 'Test', shiny: false };
+      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', referrer: 'http://test.com', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error).to.not.exist;
@@ -136,14 +136,14 @@ describe('users create validator', () => {
     });
 
     it('converts null to undefined', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', referrer: null, title: 'Test', shiny: false };
+      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', referrer: null, title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.value.referrer).to.be.undefined;
     });
 
     it('converts the empty string to undefined', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', referrer: '', title: 'Test', shiny: false };
+      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', referrer: '', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.value.referrer).to.be.undefined;
@@ -154,7 +154,7 @@ describe('users create validator', () => {
   describe('title', () => {
 
     it('is required', () => {
-      const data = { username: 'testing', password: 'testtest', shiny: false };
+      const data = { username: 'testing', password: 'testtest', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error.details[0].path).to.eql('title');
@@ -162,7 +162,7 @@ describe('users create validator', () => {
     });
 
     it('limits to 300 characters', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'a'.repeat(301), shiny: false };
+      const data = { username: 'testing', password: 'testtest', title: 'a'.repeat(301), shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error.details[0].path).to.eql('title');
@@ -170,7 +170,7 @@ describe('users create validator', () => {
     });
 
     it('trims excess whitespace', () => {
-      const data = { username: 'testing', password: 'testtest', title: '   a   ', shiny: false };
+      const data = { username: 'testing', password: 'testtest', title: '   a   ', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.value.title).to.eql('a');
@@ -181,7 +181,7 @@ describe('users create validator', () => {
   describe('shiny', () => {
 
     it('is required', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test' };
+      const data = { username: 'testing', password: 'testtest', title: 'Test', game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error.details[0].path).to.eql('shiny');
@@ -190,58 +190,18 @@ describe('users create validator', () => {
 
   });
 
-  describe('generation', () => {
-
-    it('is optional', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.error).to.not.exist;
-    });
-
-    it('allows at least 6', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, generation: 6 };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.error).to.not.exist;
-    });
-
-    it('allows at most 7', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, generation: 7 };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.error).to.not.exist;
-    });
-
-    it('disallows less than 6', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, generation: 5 };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.error.details[0].path).to.eql('generation');
-      expect(result.error.details[0].type).to.eql('number.min');
-    });
-
-    it('disallows more than 7', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, generation: 8 };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.error.details[0].path).to.eql('generation');
-      expect(result.error.details[0].type).to.eql('number.max');
-    });
-
-  });
-
   describe('game', () => {
 
-    it('is optional', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false };
+    it('is required', () => {
+      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
-      expect(result.error).to.not.exist;
+      expect(result.error.details[0].path).to.eql('game');
+      expect(result.error.details[0].type).to.eql('any.required');
     });
 
     it('limits to 50 characters', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, game: 'a'.repeat(51) };
+      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, game: 'a'.repeat(51), regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error.details[0].path).to.eql('game');
@@ -249,7 +209,7 @@ describe('users create validator', () => {
     });
 
     it('trims excess whitespace', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, game: '   a   ' };
+      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, game: '   a   ', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.value.game).to.eql('a');
@@ -257,53 +217,14 @@ describe('users create validator', () => {
 
   });
 
-  describe('region', () => {
-
-    it('is optional', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.error).to.not.exist;
-    });
-
-    it('allows national', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, region: 'national' };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.error).to.not.exist;
-    });
-
-    it('allows alola', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, region: 'alola' };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.error).to.not.exist;
-    });
-
-    it('disallows other regions', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, region: 'kalos' };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.error.details[0].path).to.eql('region');
-      expect(result.error.details[0].type).to.eql('any.allowOnly');
-    });
-
-  });
-
   describe('regional', () => {
 
-    it('is optional', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false };
+    it('is required', () => {
+      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, game: 'a' };
       const result = Joi.validate(data, UsersCreateValidator);
 
-      expect(result.error).to.not.exist;
-    });
-
-    it('is allowed', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, regional: true };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.error).to.not.exist;
+      expect(result.error.details[0].path).to.eql('regional');
+      expect(result.error.details[0].type).to.eql('any.required');
     });
 
   });

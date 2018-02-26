@@ -69,8 +69,8 @@ describe('users integration', () => {
           referrer: 'http://test.com',
           title: 'Test',
           shiny: false,
-          generation: 6,
-          region: 'national'
+          game: omegaRuby.id,
+          regional: false
         }
       })
       .then((res) => {
@@ -91,8 +91,8 @@ describe('users integration', () => {
           password: 'testtest',
           title: 'Test',
           shiny: false,
-          generation: 6,
-          region: 'national'
+          game: omegaRuby.id,
+          regional: false
         }
       })
       .then(() => new User().where('username', username).fetch())
@@ -114,8 +114,8 @@ describe('users integration', () => {
           password: 'testtest',
           title: 'Test',
           shiny: false,
-          generation: 6,
-          region: 'national'
+          game: omegaRuby.id,
+          regional: false
         }
       })
       .then(() => new User().where('username', username).fetch())
