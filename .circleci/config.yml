@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/node:6.14.2
-      - image: circleci/postgres:9.4.7
+      - image: circleci/postgres:9.4.11
         environment:
           POSTGRES_USER: pokedex_tracker_user
           POSTGRES_DB: pokedex_tracker
