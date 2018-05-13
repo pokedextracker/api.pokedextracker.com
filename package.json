@@ -4,7 +4,6 @@
   "description": "API for pokedextracker.com",
   "main": "src/index.js",
   "scripts": {
-    "coveralls": "cat ./coverage/lcov.info | coveralls",
     "db:migrate": "knex migrate:latest --knexfile db/index.js",
     "db:migrate:make": "knex migrate:make --knexfile db/index.js",
     "db:rollback": "knex migrate:rollback --knexfile db/index.js",
@@ -41,7 +40,6 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "coveralls": "^2.11.16",
     "eslint": "^1.10.3",
     "eslint-config-lob": "^2.4.0",
     "eslint-plugin-lob": "^1.0.1",

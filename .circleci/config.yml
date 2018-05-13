@@ -45,9 +45,6 @@ jobs:
           name: Enforce coverage
           command: yarn enforce
       - run:
-          name: Report coverage to Coveralls
-          command: yarn coveralls
-      - run:
           name: Compress coverage directory
           command: test -d coverage && tar czvf ~/coverage.tar.gz coverage
           when: on_fail
