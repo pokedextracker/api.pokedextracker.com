@@ -1,0 +1,55 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:5.12.0
+      - image: circleci/postgres:9.4.7
+        environment:
+          POSTGRES_USER: pokedex_tracker_user
+          POSTGRES_DB: pokedex_tracker
+          POSTGRES_PASSWORD: ""
+    working_directory: ~/api.pokedextracker.com
+    steps:
+      - restore_cache:
+          keys:
+            - source-v1-{{ .Branch }}-{{ .Revision }}
+            - source-v1-{{ .Branch }}-
+            - source-v1-
+      - checkout
+      - save_cache:
+          key: source-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/api.pokedextracker.com/.git
+      - restore_cache:
+          keys:
+            - yarn-v1-{{ checksum "yarn.lock" }}
+            - yarn-v1-
+      - run:
+          name: Install dependencies
+          command: yarn
+      - save_cache:
+          key: yarn-v1-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/api.pokedextracker.com/node_modules
+            - ~/.cache/yarn
+      - run:
+          name: Migrate database
+          command: yarn db:migrate
+      - run:
+          name: Run linter
+          command: yarn lint
+      - run:
+          name: Run tests
+          command: yarn test
+      - run:
+          name: Enforce coverage
+          command: yarn enforce
+      - run:
+          name: Report coverage to Coveralls
+          command: yarn coveralls
+      - run:
+          name: Compress coverage directory
+          command: test -d coverage && tar czvf ~/coverage.tar.gz coverage
+          when: on_fail
+      - store_artifacts:
+          path: ~/coverage.tar.gz

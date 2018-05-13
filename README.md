@@ -1,6 +1,6 @@
 # api.pokedextracker.com
 
-[![Build Status](https://travis-ci.org/pokedextracker/api.pokedextracker.com.svg)](https://travis-ci.org/pokedextracker/api.pokedextracker.com)
+[![CircleCI](https://circleci.com/gh/pokedextracker/api.pokedextracker.com.svg?style=shield)](https://circleci.com/gh/pokedextracker/api.pokedextracker.com)
 [![Coverage Status](https://coveralls.io/repos/pokedextracker/api.pokedextracker.com/badge.svg?branch=master&service=github)](https://coveralls.io/github/pokedextracker/api.pokedextracker.com?branch=master)
 [![Dependency Status](https://david-dm.org/pokedextracker/api.pokedextracker.com.svg)](https://david-dm.org/pokedextracker/api.pokedextracker.com)
 
