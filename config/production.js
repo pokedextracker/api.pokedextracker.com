@@ -8,6 +8,7 @@ module.exports = {
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_USER: process.env.DB_USER,
   DRAIN_TIMEOUT: 60000,
+  GOOD_EVENTS: { log: '*', error: '*', request: '*', response: '*' },
   JWT_SECRET: process.env.JWT_SECRET,
   PORT: 8647,
   SALT_ROUNDS: 10,

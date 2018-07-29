@@ -1,7 +1,5 @@
 'use strict';
 
-const Util = require('util');
-
 const QUOTED_REGEX = /"\w+"/g;
 
 exports.register = function (server, options, next) {
@@ -12,11 +10,6 @@ exports.register = function (server, options, next) {
     } else {
       const err = request.response;
       let msg = err.message;
-
-      /* istanbul ignore if */
-      if (err.output.statusCode === 500) {
-        Util.log(err.stack);
-      }
 
       if (err.output.statusCode === 400) {
         err.output.statusCode = 422;

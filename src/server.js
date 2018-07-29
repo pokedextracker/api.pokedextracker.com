@@ -1,7 +1,6 @@
 'use strict';
 
 const Hapi = require('hapi');
-const Util = require('util');
 
 const Config = require('../config');
 
@@ -24,6 +23,14 @@ server.register([
     register: require('good'),
     options: {
       reporters: {
+        stdout: [{
+          module: 'good-squeeze',
+          name: 'Squeeze',
+          args: [Config.GOOD_EVENTS]
+        }, {
+          module: 'good-squeeze',
+          name: 'SafeJson'
+        }, 'stdout'],
         slack: [{
           module: 'good-squeeze',
           name: 'Squeeze',
@@ -42,6 +49,7 @@ server.register([
   require('./plugins/features/dexes'),
   require('./plugins/features/donations'),
   require('./plugins/features/games'),
+  require('./plugins/features/health'),
   require('./plugins/features/pokemon'),
   require('./plugins/features/sessions'),
   require('./plugins/features/users')
@@ -54,9 +62,9 @@ server.register([
 
 /* istanbul ignore next */
 process.on('SIGTERM', () => {
-  Util.log(`Draining server for ${Config.DRAIN_TIMEOUT}ms...`);
+  server.log(['info', 'server'], `draining server for ${Config.DRAIN_TIMEOUT}ms...`);
   server.stop({ timeout: Config.DRAIN_TIMEOUT }, () => {
-    Util.log('Server stopped');
+    server.log(['info', 'server'], 'server stopped');
     process.exit(0);
   });
 });
