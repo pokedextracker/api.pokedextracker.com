@@ -52,3 +52,11 @@ $ yarn test
 ```
 
 It will output the results of the test, and a coverage summary. To see a line-by-line breakdown of coverage to see what you missed, you should open `./coverage/lcov-report/index.html`.
+
+## Docker
+
+Every merge into the `master` branch on GitHub triggers a new build for a Docker image. That image will overwrite the `latest` tag, and there will be an explicit tag with the first 7 characters of the commit hash. The server will be listening on port 8647 so if you run a container locally, make sure that traffic is forwarded to that port. For example:
+
+ ```sh
+$ docker run --rm --publish 8647:8647 --name pokedextracker-api pokedextracker/api.pokedextracker.com:latest
+```
