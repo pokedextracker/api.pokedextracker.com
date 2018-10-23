@@ -25,7 +25,7 @@ func TestRecovery(t *testing.T) {
 
 	for _, path := range paths {
 		req, err := http.NewRequest("GET", path, nil)
-		require.Nil(t, err, "unexpecetd error when making new request")
+		require.Nil(t, err, "unexpected error when making new request")
 
 		w := httptest.NewRecorder()
 
