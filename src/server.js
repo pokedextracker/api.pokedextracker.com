@@ -19,6 +19,7 @@ const server = new Hapi.Server({
 server.connection({ port: Config.PORT });
 
 server.register([
+  require('./plugins/services/metrics/start'),
   {
     register: require('good'),
     options: {
@@ -52,7 +53,8 @@ server.register([
   require('./plugins/features/health'),
   require('./plugins/features/pokemon'),
   require('./plugins/features/sessions'),
-  require('./plugins/features/users')
+  require('./plugins/features/users'),
+  require('./plugins/services/metrics/end')
 ], (err) => {
   /* istanbul ignore if */
   if (err) {

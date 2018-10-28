@@ -1,17 +1,22 @@
 'use strict';
 
+const Package = require('../package.json');
+
 module.exports = {
   DB_DEBUG: process.env.DB_DEBUG,
-  DB_NAME: process.env.DB_NAME,
   DB_HOST: process.env.DB_HOST,
-  DB_PORT: process.env.DB_PORT,
+  DB_NAME: process.env.DB_NAME,
   DB_PASSWORD: process.env.DB_PASSWORD,
+  DB_PORT: process.env.DB_PORT,
   DB_USER: process.env.DB_USER,
   DRAIN_TIMEOUT: 60000,
+  ENVIRONMENT: 'staging',
   GOOD_EVENTS: { log: '*', error: '*', request: '*', response: '*' },
   JWT_SECRET: process.env.JWT_SECRET,
   PORT: 8647,
   SALT_ROUNDS: 10,
   SLACK_URL: '',
-  STRIPE_API_KEY: process.env.STRIPE_API_KEY
+  STATSD_HOST: process.env.STATSD_HOST,
+  STRIPE_API_KEY: process.env.STRIPE_API_KEY,
+  VERSION: Package.version
 };

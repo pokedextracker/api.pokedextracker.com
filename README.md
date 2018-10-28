@@ -30,8 +30,8 @@ This project uses PostgreSQL as its database, so you'll need to have the role an
 
 ```
 $ psql postgres
-postgres=# CREATE ROLE "pokedex_tracker_user" CREATEDB CREATEUSER LOGIN;
-$ createdb -O pokedex_tracker_user pokedex_tracker
+postgres=# CREATE ROLE "pokedex_tracker_admin" CREATEDB CREATEUSER LOGIN;
+$ createdb -O pokedex_tracker_admin pokedex_tracker
 $ yarn db:migrate
 ```
 

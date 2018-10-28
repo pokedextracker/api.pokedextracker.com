@@ -30,6 +30,7 @@
     "hapi": "^16.1.0",
     "hapi-auth-jwt": "^4.0.0",
     "hapi-bookshelf-serializer": "^2.1.0",
+    "hot-shots": "^5.9.1",
     "joi": "^10.2.2",
     "jsonwebtoken": "^7.3.0",
     "knex": "^0.12.7",
