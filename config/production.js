@@ -19,5 +19,5 @@ module.exports = {
   SLACK_URL: process.env.SLACK_URL,
   STATSD_HOST: process.env.STATSD_HOST,
   STRIPE_API_KEY: process.env.STRIPE_API_KEY,
-  VERSION: Package.version
+  VERSION: process.env.VERSION || Package.version
 };
