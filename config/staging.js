@@ -13,6 +13,7 @@ module.exports = {
   ENVIRONMENT: 'staging',
   GOOD_EVENTS: { log: '*', error: '*', request: '*', response: '*' },
   JWT_SECRET: process.env.JWT_SECRET,
+  METRICS_MOCK: false,
   PORT: 8647,
   SALT_ROUNDS: 10,
   SLACK_URL: '',

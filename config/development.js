@@ -11,6 +11,7 @@ module.exports = {
   ENVIRONMENT: 'development',
   GOOD_EVENTS: { log: '*', error: '*', request: '*', response: '*' },
   JWT_SECRET: 's3cret',
+  METRICS_MOCK: false,
   PORT: 8647,
   SALT_ROUNDS: 10,
   SLACK_URL: '',
