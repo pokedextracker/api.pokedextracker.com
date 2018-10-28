@@ -12,9 +12,9 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - source-v1-{{ .Branch }}-{{ .Revision }}
-            - source-v1-{{ .Branch }}-
-            - source-v1-
+            - source-v0-{{ .Branch }}-{{ .Revision }}
+            - source-v0-{{ .Branch }}-
+            - source-v0-
       - checkout
       - save_cache:
           key: source-v1-{{ .Branch }}-{{ .Revision }}
