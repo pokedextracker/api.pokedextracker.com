@@ -1,9 +1,12 @@
 'use strict';
 
+const Bluebird = require('bluebird');
+
 const Bookshelf           = require('../libraries/bookshelf');
 const Evolution           = require('./evolution');
 const GameFamily          = require('./game-family');
 const GameFamilyDexNumber = require('./game-family-dex-number');
+const Location            = require('./location');
 
 module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
   tableName: 'pokemon',
@@ -13,6 +16,9 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
   },
   game_family_dex_numbers () {
     return this.hasMany(GameFamilyDexNumber, 'pokemon_id');
+  },
+  locations () {
+    return this.hasMany(Location, 'pokemon_id');
   },
   evolutions (query) {
     return new Evolution()
@@ -133,9 +139,28 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
       if (family.pokemon.length === 0) {
         family.pokemon.push([this.get('summary')]);
       }
-      return family;
+      return Bluebird.all([
+        family,
+        query.game_family && new GameFamily({ id: query.game_family }).fetch({ require: true })
+      ]);
     })
-    .then((family) => {
+    .spread((evolutionFamily, gameFamily) => {
+      const locations = this.related('locations')
+        .filter((l) => {
+          if (!gameFamily) {
+            return true;
+          }
+
+          const locationGameFamily = l.related('game').related('game_family');
+
+          if (query.regional) {
+            return gameFamily.id === locationGameFamily.get('id');
+          }
+
+          return gameFamily.get('generation') >= locationGameFamily.get('generation');
+        })
+        .map((l) => l.serialize(request));
+
       return Object.assign({
         id: this.get('id'),
         national_id: this.get('national_id'),
@@ -152,10 +177,19 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         moon_locations: this.get('moon_locations'),
         us_locations: this.get('us_locations'),
         um_locations: this.get('um_locations'),
-        evolution_family: family
+        locations,
+        evolution_family: evolutionFamily
       });
     });
   }
 }, {
-  RELATED: ['game_family', 'game_family_dex_numbers']
+  CAPTURE_SUMMARY_RELATED: ['game_family', 'game_family_dex_numbers'],
+  RELATED: ['game_family', 'game_family_dex_numbers', {
+    locations (qb) {
+      qb
+        .innerJoin('games', 'locations.game_id', 'games.id')
+        .innerJoin('game_families', 'games.game_family_id', 'game_families.id')
+        .orderByRaw('game_families.order DESC, games.order ASC');
+    }
+  }, 'locations.game', 'locations.game.game_family']
 }));

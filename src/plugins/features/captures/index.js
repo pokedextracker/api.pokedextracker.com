@@ -35,7 +35,7 @@ exports.register = (server, options, next) => {
     }
   }]);
 
-  return new Pokemon().query((qb) => qb.orderBy('id')).fetchAll({ withRelated: Pokemon.RELATED })
+  return new Pokemon().query((qb) => qb.orderBy('id')).fetchAll({ withRelated: Pokemon.CAPTURE_SUMMARY_RELATED })
   .get('models')
   .then((p) => {
     pokemon = p;
