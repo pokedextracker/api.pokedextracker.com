@@ -17,6 +17,8 @@ describe('game family model', () => {
         'generation',
         'regional_total',
         'national_total',
+        'regional_support',
+        'national_support',
         'order',
         'published'
       ]);
