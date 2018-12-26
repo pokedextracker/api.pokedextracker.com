@@ -47,6 +47,8 @@ exports.create = function (payload, request) {
         username: payload.username,
         password: payload.password,
         friend_code: payload.friend_code,
+        '3ds_friend_code': payload['3ds_friend_code'] || payload.friend_code,
+        switch_friend_code: payload.switch_friend_code,
         referrer: payload.referrer,
         last_ip: ip
       }, { transacting })
@@ -72,6 +74,10 @@ exports.create = function (payload, request) {
 exports.update = function (username, payload, auth) {
   return Bluebird.resolve()
   .then(() => {
+    if (payload.friend_code && !payload['3ds_friend_code']) {
+      payload['3ds_friend_code'] = payload.friend_code;
+    }
+
     if (payload.password) {
       return Bcrypt.hash(payload.password, Config.SALT_ROUNDS)
       .then((hash) => payload.password = hash);
