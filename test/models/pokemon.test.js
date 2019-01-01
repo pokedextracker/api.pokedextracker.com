@@ -299,6 +299,7 @@ describe('pokemon model', () => {
         expect(json.evolution_family.evolutions[0][0]).to.have.all.keys([
           'trigger',
           'level',
+          'candy_count',
           'stone',
           'held_item',
           'notes'

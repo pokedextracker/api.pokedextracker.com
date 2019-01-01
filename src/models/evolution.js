@@ -15,6 +15,7 @@ module.exports = Bookshelf.model('Evolution', Bookshelf.Model.extend({
     return {
       trigger: this.get('trigger'),
       level: this.get('level') || undefined,
+      candy_count: this.get('candy_count') || undefined,
       stone: this.get('stone') || undefined,
       held_item: this.get('held_item') || undefined,
       notes: this.get('notes') || undefined

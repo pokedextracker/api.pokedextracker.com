@@ -16,6 +16,7 @@ describe('evolution model', () => {
       expect(json).to.have.all.keys([
         'trigger',
         'level',
+        'candy_count',
         'stone',
         'held_item',
         'notes'
