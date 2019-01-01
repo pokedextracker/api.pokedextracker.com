@@ -16,10 +16,12 @@ const sun       = Factory.build('game', { id: 'sun', game_family_id: sunMoon.id 
 
 const firstPokemon     = Factory.build('pokemon', { id: 1, national_id: 1, game_family_id: oras.id });
 const secondPokemon    = Factory.build('pokemon', { id: 2, national_id: 2, game_family_id: oras.id });
-const otherGamePokemon = Factory.build('pokemon', { id: 3, national_id: 3, game_family_id: sunMoon.id });
+const formPokemon      = Factory.build('pokemon', { id: 3, national_id: 2, game_family_id: oras.id, form: 'alola' });
+const otherGamePokemon = Factory.build('pokemon', { id: 4, national_id: 3, game_family_id: sunMoon.id });
 
 const firstDexNumber     = Factory.build('game-family-dex-number', { pokemon_id: firstPokemon.id, game_family_id: oras.id });
 const secondDexNumber    = Factory.build('game-family-dex-number', { pokemon_id: secondPokemon.id, game_family_id: oras.id });
+const formDexNumber      = Factory.build('game-family-dex-number', { pokemon_id: formPokemon.id, game_family_id: oras.id, dex_number: secondDexNumber.dex_number });
 const otherGameDexNumber = Factory.build('game-family-dex-number', { pokemon_id: otherGamePokemon.id, game_family_id: sunMoon.id });
 
 const user      = Factory.build('user');
@@ -96,6 +98,20 @@ describe('captures controller', () => {
         captures.forEach((capture) => {
           expect(capture.pokemon[`${oras.id}_id`]).to.exist;
         });
+      });
+    });
+
+    it('sorts based on name and then by form', () => {
+      return Knex('pokemon').insert(formPokemon)
+      .then(() => Knex('game_family_dex_numbers').insert(formDexNumber))
+      .then(() => new Pokemon().query((qb) => qb.orderBy('id')).fetchAll({ withRelated: Pokemon.RELATED }))
+      .get('models')
+      .then((pokemon) => Controller.list({ dex: regionalDex.id }, pokemon))
+      .map((capture) => capture.serialize())
+      .then((captures) => {
+        expect(captures[0].pokemon.id).to.eql(firstPokemon.id);
+        expect(captures[1].pokemon.id).to.eql(secondPokemon.id);
+        expect(captures[2].pokemon.id).to.eql(formPokemon.id);
       });
     });
 

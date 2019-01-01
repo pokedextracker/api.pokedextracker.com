@@ -51,6 +51,13 @@ exports.list = function (query, pokemon) {
         const aId = a.related('pokemon').get('dex_number_properties')[`${dex.related('game').related('game_family').get('id')}_id`];
         const bId = b.related('pokemon').get('dex_number_properties')[`${dex.related('game').related('game_family').get('id')}_id`];
 
+        if (aId === bId) {
+          const aForm = a.related('pokemon').get('form');
+          const bForm = b.related('pokemon').get('form');
+
+          return (aForm || '').localeCompare(bForm);
+        }
+
         return aId - bId;
       }
 
