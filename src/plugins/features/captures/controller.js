@@ -52,10 +52,15 @@ exports.list = function (query, pokemon) {
         const bId = b.related('pokemon').get('dex_number_properties')[`${dex.related('game').related('game_family').get('id')}_id`];
 
         if (aId === bId) {
-          const aForm = a.related('pokemon').get('form');
-          const bForm = b.related('pokemon').get('form');
+          // The defaulting to the empty string is necessary since null doesn't
+          // sort the same way that the empty string does. Coverage is ignored
+          // for that line because it's difficult to make sure this sort
+          // function is called with right arguments.
+          const aForm = a.related('pokemon').get('form') || '';
+          /* istanbul ignore next */
+          const bForm = b.related('pokemon').get('form') || '';
 
-          return (aForm || '').localeCompare(bForm);
+          return aForm.localeCompare(bForm);
         }
 
         return aId - bId;

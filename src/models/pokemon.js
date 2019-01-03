@@ -136,6 +136,15 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
       return family;
     }, { pokemon: [], evolutions: [] })
     .then((family) => {
+      // filter out nulls from evolutions that don't exist in the given game
+      // family or regionality
+      while (family.pokemon.length > 0 && !family.pokemon[0]) {
+        family.pokemon.shift();
+      }
+      while (family.evolutions.length > 0 && !family.evolutions[0]) {
+        family.evolutions.shift();
+      }
+
       if (family.pokemon.length === 0) {
         family.pokemon.push([this.get('summary')]);
       }
