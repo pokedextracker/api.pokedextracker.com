@@ -10,13 +10,13 @@ module.exports = Joi.object().keys({
         string: { regex: { base: 'must be a valid 3DS friend code' } }
       }
     }),
-  '3ds_friend_code': Joi.string().regex(/^\d{4}-\d{4}-\d{4}$/).empty(['', null]).default(null)
+  friend_code_3ds: Joi.string().regex(/^\d{4}-\d{4}-\d{4}$/).empty(['', null]).default(null)
     .options({
       language: {
         string: { regex: { base: 'must be a valid 3DS friend code' } }
       }
     }),
-  switch_friend_code: Joi.string().regex(/^SW-\d{4}-\d{4}-\d{4}$/).empty(['', null]).default(null)
+  friend_code_switch: Joi.string().regex(/^SW-\d{4}-\d{4}-\d{4}$/).empty(['', null]).default(null)
     .options({
       language: {
         string: { regex: { base: 'must be a valid Switch friend code' } }

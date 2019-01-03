@@ -18,8 +18,8 @@ describe('user model', () => {
           'id',
           'username',
           'friend_code',
-          '3ds_friend_code',
-          'switch_friend_code',
+          'friend_code_3ds',
+          'friend_code_switch',
           'date_created',
           'date_modified'
         ]);
@@ -41,8 +41,8 @@ describe('user model', () => {
           'id',
           'username',
           'friend_code',
-          '3ds_friend_code',
-          'switch_friend_code',
+          'friend_code_3ds',
+          'friend_code_switch',
           'dexes',
           'donated',
           'date_created',

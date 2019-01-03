@@ -118,7 +118,7 @@ describe('users create validator', () => {
 
   });
 
-  describe('3ds_friend_code', () => {
+  describe('friend_code_3ds', () => {
 
     it('is optional', () => {
       const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, game: 'a', regional: true };
@@ -128,38 +128,38 @@ describe('users create validator', () => {
     });
 
     it('converts null to undefined', () => {
-      const data = { username: 'testing', password: 'testtest', '3ds_friend_code': null, title: 'Test', shiny: false, game: 'a', regional: true };
+      const data = { username: 'testing', password: 'testtest', friend_code_3ds: null, title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
-      expect(result.value['3ds_friend_code']).to.be.undefined;
+      expect(result.value.friend_code_3ds).to.be.undefined;
     });
 
     it('converts the empty string to undefined', () => {
-      const data = { username: 'testing', password: 'testtest', '3ds_friend_code': '', title: 'Test', shiny: false, game: 'a', regional: true };
+      const data = { username: 'testing', password: 'testtest', friend_code_3ds: '', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
-      expect(result.value['3ds_friend_code']).to.be.undefined;
+      expect(result.value.friend_code_3ds).to.be.undefined;
     });
 
     it('allows codes in the format of 1234-1234-1234', () => {
-      const data = { username: 'testing', password: 'testtest', '3ds_friend_code': '1234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
+      const data = { username: 'testing', password: 'testtest', friend_code_3ds: '1234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error).to.not.exist;
     });
 
     it('disallows codes not in the format of 1234-1234-1234', () => {
-      const data = { username: 'testing', password: 'testtest', '3ds_friend_code': '234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
+      const data = { username: 'testing', password: 'testtest', friend_code_3ds: '234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
-      expect(result.error.details[0].path).to.eql('3ds_friend_code');
+      expect(result.error.details[0].path).to.eql('friend_code_3ds');
       expect(result.error.details[0].type).to.eql('string.regex.base');
-      expect(result.error).to.match(/"3ds_friend_code" must be a valid 3DS friend code/);
+      expect(result.error).to.match(/"friend_code_3ds" must be a valid 3DS friend code/);
     });
 
   });
 
-  describe('switch_friend_code', () => {
+  describe('friend_code_switch', () => {
 
     it('is optional', () => {
       const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, game: 'a', regional: true };
@@ -169,33 +169,33 @@ describe('users create validator', () => {
     });
 
     it('converts null to undefined', () => {
-      const data = { username: 'testing', password: 'testtest', switch_friend_code: null, title: 'Test', shiny: false, game: 'a', regional: true };
+      const data = { username: 'testing', password: 'testtest', friend_code_switch: null, title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
-      expect(result.value.switch_friend_code).to.be.undefined;
+      expect(result.value.friend_code_switch).to.be.undefined;
     });
 
     it('converts the empty string to undefined', () => {
-      const data = { username: 'testing', password: 'testtest', switch_friend_code: '', title: 'Test', shiny: false, game: 'a', regional: true };
+      const data = { username: 'testing', password: 'testtest', friend_code_switch: '', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
-      expect(result.value.switch_friend_code).to.be.undefined;
+      expect(result.value.friend_code_switch).to.be.undefined;
     });
 
     it('allows codes in the format of SW-1234-1234-1234', () => {
-      const data = { username: 'testing', password: 'testtest', switch_friend_code: 'SW-1234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
+      const data = { username: 'testing', password: 'testtest', friend_code_switch: 'SW-1234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error).to.not.exist;
     });
 
     it('disallows codes not in the format of SW-1234-1234-1234', () => {
-      const data = { username: 'testing', password: 'testtest', switch_friend_code: '1234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
+      const data = { username: 'testing', password: 'testtest', friend_code_switch: '1234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
-      expect(result.error.details[0].path).to.eql('switch_friend_code');
+      expect(result.error.details[0].path).to.eql('friend_code_switch');
       expect(result.error.details[0].type).to.eql('string.regex.base');
-      expect(result.error).to.match(/"switch_friend_code" must be a valid Switch friend code/);
+      expect(result.error).to.match(/"friend_code_switch" must be a valid Switch friend code/);
     });
 
   });
