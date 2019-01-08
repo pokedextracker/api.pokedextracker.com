@@ -9,7 +9,7 @@ const game = Factory.build('game', { game_family_id: gameFamily.id });
 
 const pokemon = Factory.build('pokemon', { game_family_id: gameFamily.id });
 
-const location = Factory.build('location', { game_id: game.id, pokemon_id: pokemon.id });
+const location = Factory.build('location', { game_id: game.id, pokemon_id: pokemon.id, value: 'Route 1, Route 2, Trade from Let\'s Go, Pikachu!, Route 3, Trade from Let\'s Go, Eevee!, Route 4' });
 
 describe('location model', () => {
 
@@ -30,7 +30,7 @@ describe('location model', () => {
           'game',
           'value'
         ]);
-        expect(json.value).to.eql(['Route 1', 'Route 2']);
+        expect(json.value).to.eql(['Route 1', 'Route 2', 'Trade from Let\'s Go, Pikachu!', 'Route 3', 'Trade from Let\'s Go, Eevee!', 'Route 4']);
         expect(json.game.game_family.id).to.eql(gameFamily.id);
       });
     });
