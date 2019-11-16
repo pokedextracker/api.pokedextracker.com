@@ -33,47 +33,6 @@ describe('users update validator', () => {
 
   });
 
-  describe('friend_code', () => {
-
-    it('defaults to null', () => {
-      const data = {};
-      const result = Joi.validate(data, UsersUpdateValidator);
-
-      expect(result.value.friend_code).to.be.null;
-    });
-
-    it('allows null', () => {
-      const data = { friend_code: null };
-      const result = Joi.validate(data, UsersUpdateValidator);
-
-      expect(result.value.friend_code).to.be.null;
-    });
-
-    it('converts the empty string to null', () => {
-      const data = { friend_code: '' };
-      const result = Joi.validate(data, UsersUpdateValidator);
-
-      expect(result.value.friend_code).to.be.null;
-    });
-
-    it('allows codes in the format of 1234-1234-1234', () => {
-      const data = { friend_code: '1234-1234-1234' };
-      const result = Joi.validate(data, UsersUpdateValidator);
-
-      expect(result.error).to.not.exist;
-    });
-
-    it('disallows codes not in the format of 1234-1234-1234', () => {
-      const data = { friend_code: '234-1234-1234' };
-      const result = Joi.validate(data, UsersUpdateValidator);
-
-      expect(result.error.details[0].path).to.eql('friend_code');
-      expect(result.error.details[0].type).to.eql('string.regex.base');
-      expect(result.error).to.match(/"friend_code" must be a valid 3DS friend code/);
-    });
-
-  });
-
   describe('friend_code_3ds', () => {
 
     it('defaults to null', () => {

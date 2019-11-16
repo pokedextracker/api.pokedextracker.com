@@ -77,47 +77,6 @@ describe('users create validator', () => {
 
   });
 
-  describe('friend_code', () => {
-
-    it('is optional', () => {
-      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, game: 'a', regional: true };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.error).to.not.exist;
-    });
-
-    it('converts null to undefined', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: null, title: 'Test', shiny: false, game: 'a', regional: true };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.value.friend_code).to.be.undefined;
-    });
-
-    it('converts the empty string to undefined', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '', title: 'Test', shiny: false, game: 'a', regional: true };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.value.friend_code).to.be.undefined;
-    });
-
-    it('allows codes in the format of 1234-1234-1234', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.error).to.not.exist;
-    });
-
-    it('disallows codes not in the format of 1234-1234-1234', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
-      const result = Joi.validate(data, UsersCreateValidator);
-
-      expect(result.error.details[0].path).to.eql('friend_code');
-      expect(result.error.details[0].type).to.eql('string.regex.base');
-      expect(result.error).to.match(/"friend_code" must be a valid 3DS friend code/);
-    });
-
-  });
-
   describe('friend_code_3ds', () => {
 
     it('is optional', () => {
@@ -203,14 +162,14 @@ describe('users create validator', () => {
   describe('referrer', () => {
 
     it('is optional', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', title: 'Test', shiny: false, game: 'a', regional: true };
+      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error).to.not.exist;
     });
 
     it('can be a string', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', referrer: 'http://test.com', title: 'Test', shiny: false, game: 'a', regional: true };
+      const data = { username: 'testing', password: 'testtest', referrer: 'http://test.com', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.error).to.not.exist;
@@ -218,14 +177,14 @@ describe('users create validator', () => {
     });
 
     it('converts null to undefined', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', referrer: null, title: 'Test', shiny: false, game: 'a', regional: true };
+      const data = { username: 'testing', password: 'testtest', referrer: null, title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.value.referrer).to.be.undefined;
     });
 
     it('converts the empty string to undefined', () => {
-      const data = { username: 'testing', password: 'testtest', friend_code: '1234-1234-1234', referrer: '', title: 'Test', shiny: false, game: 'a', regional: true };
+      const data = { username: 'testing', password: 'testtest', referrer: '', title: 'Test', shiny: false, game: 'a', regional: true };
       const result = Joi.validate(data, UsersCreateValidator);
 
       expect(result.value.referrer).to.be.undefined;

@@ -11,7 +11,7 @@ const User       = require('../../../../src/models/user');
 
 const firstUser      = Factory.build('user');
 const secondUser     = Factory.build('user');
-const friendCodeUser = Factory.build('user', { friend_code: '0000-0000-0000' });
+const friendCodeUser = Factory.build('user', { friend_code_3ds: '0000-0000-0000' });
 
 const oras    = Factory.build('game-family', { id: 'omega_ruby_alpha_sapphire', order: 14 });
 const sunMoon = Factory.build('game-family', { id: 'sun_moon', order: 15 });
@@ -190,10 +190,10 @@ describe('users controller', () => {
     it('updates a user', () => {
       const friendCode = '4321-4321-4321';
 
-      return Controller.update(firstUser.username, { friend_code: friendCode }, { id: firstUser.id })
+      return Controller.update(firstUser.username, { friend_code_3ds: friendCode }, { id: firstUser.id })
       .then(() => new User({ id: firstUser.id }).fetch())
       .then((user) => {
-        expect(user.get('friend_code')).to.eql(friendCode);
+        expect(user.get('friend_code_3ds')).to.eql(friendCode);
       });
     });
 
@@ -209,17 +209,17 @@ describe('users controller', () => {
     });
 
     it('clears out the friend code if null is passed in', () => {
-      return Controller.update(friendCodeUser.username, { friend_code: null }, { id: friendCodeUser.id })
+      return Controller.update(friendCodeUser.username, { friend_code_3ds: null }, { id: friendCodeUser.id })
       .then(() => new User({ id: friendCodeUser.id }).fetch())
       .then((user) => {
-        expect(user.get('friend_code')).to.not.exist;
+        expect(user.get('friend_code_3ds')).to.not.exist;
       });
     });
 
     it('returns a new session', () => {
       const friendCode = '4321-4321-4321';
 
-      return Controller.update(firstUser.username, { friend_code: friendCode }, { id: firstUser.id })
+      return Controller.update(firstUser.username, { friend_code_3ds: friendCode }, { id: firstUser.id })
       .then((session) => {
         expect(session.token).to.be.a('string');
       });

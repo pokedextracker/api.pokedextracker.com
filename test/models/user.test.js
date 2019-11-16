@@ -17,7 +17,6 @@ describe('user model', () => {
         expect(User.forge(user).get('summary')).to.have.all.keys([
           'id',
           'username',
-          'friend_code',
           'friend_code_3ds',
           'friend_code_switch',
           'date_created',
@@ -40,7 +39,6 @@ describe('user model', () => {
         expect(json).to.have.all.keys([
           'id',
           'username',
-          'friend_code',
           'friend_code_3ds',
           'friend_code_switch',
           'dexes',

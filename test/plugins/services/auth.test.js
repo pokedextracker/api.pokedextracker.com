@@ -74,7 +74,7 @@ describe('auth service plugin', () => {
     })
     .then((res) => {
       expect(res.statusCode).to.eql(200);
-      expect(res.result).to.contain.all.keys(['id', 'username', 'friend_code']);
+      expect(res.result).to.contain.all.keys(['id', 'username']);
     });
   });
 

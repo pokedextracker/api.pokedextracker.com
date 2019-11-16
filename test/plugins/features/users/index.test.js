@@ -139,7 +139,7 @@ describe('users integration', () => {
         method: 'POST',
         url: `/users/${firstUser.username}`,
         headers: { authorization: auth },
-        payload: { friend_code: '4321-4321-4321' }
+        payload: { friend_code_3ds: '4321-4321-4321' }
       })
       .then((res) => {
         expect(res.statusCode).to.eql(200);

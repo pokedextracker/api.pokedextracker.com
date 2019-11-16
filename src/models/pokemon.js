@@ -77,30 +77,6 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         name: this.get('name'),
         form: this.get('form')
       };
-    },
-    x_locations () {
-      return this.get('x_location') ? this.get('x_location').split(', ') : [];
-    },
-    y_locations () {
-      return this.get('y_location') ? this.get('y_location').split(', ') : [];
-    },
-    or_locations () {
-      return this.get('or_location') ? this.get('or_location').split(', ') : [];
-    },
-    as_locations () {
-      return this.get('as_location') ? this.get('as_location').split(', ') : [];
-    },
-    sun_locations () {
-      return this.get('sun_location') ? this.get('sun_location').split(', ') : [];
-    },
-    moon_locations () {
-      return this.get('moon_location') ? this.get('moon_location').split(', ') : [];
-    },
-    us_locations () {
-      return this.get('us_location') ? this.get('us_location').split(', ') : [];
-    },
-    um_locations () {
-      return this.get('um_location') ? this.get('um_location').split(', ') : [];
     }
   },
   serialize (request) {
@@ -178,14 +154,6 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         form: this.get('form'),
         box: this.get('box')
       }, this.get('dex_number_properties'), {
-        x_locations: this.get('x_locations'),
-        y_locations: this.get('y_locations'),
-        or_locations: this.get('or_locations'),
-        as_locations: this.get('as_locations'),
-        sun_locations: this.get('sun_locations'),
-        moon_locations: this.get('moon_locations'),
-        us_locations: this.get('us_locations'),
-        um_locations: this.get('um_locations'),
         locations,
         evolution_family: evolutionFamily
       });

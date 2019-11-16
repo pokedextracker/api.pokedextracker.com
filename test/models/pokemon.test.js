@@ -154,102 +154,6 @@ describe('pokemon model', () => {
 
     });
 
-    describe('x_locations', () => {
-
-      it('splits by commas', () => {
-        expect(Pokemon.forge({ x_location: 'Route 1, Route 2' }).get('x_locations')).to.eql(['Route 1', 'Route 2']);
-      });
-
-      it('returns an empty array if the value does not exist', () => {
-        expect(Pokemon.forge({ x_location: null }).get('x_locations')).to.eql([]);
-      });
-
-    });
-
-    describe('y_locations', () => {
-
-      it('splits by commas', () => {
-        expect(Pokemon.forge({ y_location: 'Route 1, Route 2' }).get('y_locations')).to.eql(['Route 1', 'Route 2']);
-      });
-
-      it('returns an empty array if the value does not exist', () => {
-        expect(Pokemon.forge({ y_location: null }).get('y_locations')).to.eql([]);
-      });
-
-    });
-
-    describe('or_locations', () => {
-
-      it('splits by commas', () => {
-        expect(Pokemon.forge({ or_location: 'Route 1, Route 2' }).get('or_locations')).to.eql(['Route 1', 'Route 2']);
-      });
-
-      it('returns an empty array if the value does not exist', () => {
-        expect(Pokemon.forge({ or_location: null }).get('or_locations')).to.eql([]);
-      });
-
-    });
-
-    describe('as_locations', () => {
-
-      it('splits by commas', () => {
-        expect(Pokemon.forge({ as_location: 'Route 1, Route 2' }).get('as_locations')).to.eql(['Route 1', 'Route 2']);
-      });
-
-      it('returns an empty array if the value does not exist', () => {
-        expect(Pokemon.forge({ as_location: null }).get('as_locations')).to.eql([]);
-      });
-
-    });
-
-    describe('sun_locations', () => {
-
-      it('splits by commas', () => {
-        expect(Pokemon.forge({ sun_location: 'Route 1, Route 2' }).get('sun_locations')).to.eql(['Route 1', 'Route 2']);
-      });
-
-      it('returns an empty array if the value does not exist', () => {
-        expect(Pokemon.forge({ sun_location: null }).get('sun_locations')).to.eql([]);
-      });
-
-    });
-
-    describe('moon_locations', () => {
-
-      it('splits by commas', () => {
-        expect(Pokemon.forge({ moon_location: 'Route 1, Route 2' }).get('moon_locations')).to.eql(['Route 1', 'Route 2']);
-      });
-
-      it('returns an empty array if the value does not exist', () => {
-        expect(Pokemon.forge({ moon_location: null }).get('moon_locations')).to.eql([]);
-      });
-
-    });
-
-    describe('us_locations', () => {
-
-      it('splits by commas', () => {
-        expect(Pokemon.forge({ us_location: 'Route 1, Route 2' }).get('us_locations')).to.eql(['Route 1', 'Route 2']);
-      });
-
-      it('returns an empty array if the value does not exist', () => {
-        expect(Pokemon.forge({ us_location: null }).get('us_locations')).to.eql([]);
-      });
-
-    });
-
-    describe('um_locations', () => {
-
-      it('splits by commas', () => {
-        expect(Pokemon.forge({ um_location: 'Route 1, Route 2' }).get('um_locations')).to.eql(['Route 1', 'Route 2']);
-      });
-
-      it('returns an empty array if the value does not exist', () => {
-        expect(Pokemon.forge({ um_location: null }).get('um_locations')).to.eql([]);
-      });
-
-    });
-
   });
 
   describe('serialize', () => {
@@ -267,14 +171,6 @@ describe('pokemon model', () => {
           'box',
           'red_blue_id',
           'sun_moon_id',
-          'x_locations',
-          'y_locations',
-          'or_locations',
-          'as_locations',
-          'sun_locations',
-          'moon_locations',
-          'us_locations',
-          'um_locations',
           'locations',
           'evolution_family'
         ]);
