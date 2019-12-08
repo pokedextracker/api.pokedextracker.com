@@ -8,17 +8,32 @@ const Errors  = require('../../../libraries/errors');
 const Knex    = require('../../../libraries/knex');
 const Pokemon = require('../../../models/pokemon');
 
+const boxOrdering = {
+  '': 0,
+  'Alola Forms': 1,
+  'Galarian Forms': 2,
+  Gigantamax: 3
+};
+
 exports.list = function (query, pokemon) {
   let dex;
+  let boxQuery;
 
   return new Dex({ id: query.dex }).fetch({ require: true, withRelated: Dex.RELATED })
-  .then((d) => dex = d)
+  .then((d) => {
+    dex = d;
+    boxQuery = {
+      game_family: dex.related('game').related('game_family').get('id'),
+      regional: dex.get('regional')
+    };
+  })
   .catch(Dex.NotFoundError, () => {
     throw new Errors.NotFound('dex');
   })
   .then(() => new Capture().where('dex_id', query.dex).fetchAll({ withRelated: Capture.RELATED }))
   .get('models')
   .reduce((captures, capture) => {
+    capture.relations.dex = dex;
     captures[capture.get('pokemon_id')] = capture;
     return captures;
   }, {})
@@ -35,11 +50,12 @@ exports.list = function (query, pokemon) {
         return null;
       }
 
-      if (captures[i + 1]) {
-        return captures[i + 1];
+      if (captures[pokemon[i].get('id')]) {
+        return captures[pokemon[i].get('id')];
       }
 
-      const capture = Capture.forge({ dex_id: query.dex, pokemon_id: i + 1, captured: false });
+      const capture = Capture.forge({ dex_id: query.dex, pokemon_id: pokemon[i].get('id'), captured: false });
+      capture.relations.dex = dex;
       capture.relations.pokemon = pokemon[i];
       return capture;
     });
@@ -59,8 +75,14 @@ exports.list = function (query, pokemon) {
           const aForm = a.related('pokemon').get('form') || '';
           /* istanbul ignore next */
           const bForm = b.related('pokemon').get('form') || '';
+          const aBox = a.related('pokemon').box(boxQuery) || '';
+          const bBox = b.related('pokemon').box(boxQuery) || '';
 
-          return aForm.localeCompare(bForm);
+          if (aBox === bBox) {
+            return aForm.localeCompare(bForm);
+          }
+
+          return boxOrdering[aBox] - boxOrdering[bBox];
         }
 
         return aId - bId;

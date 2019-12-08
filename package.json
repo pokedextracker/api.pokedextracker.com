@@ -9,7 +9,7 @@
     "db:rollback": "knex migrate:rollback --knexfile db/index.js",
     "deploy:production": "./scripts/deploy.sh production",
     "deploy:staging": "./scripts/deploy.sh staging",
-    "enforce": "istanbul check-coverage --statement 100 --branch 100 --function 100 --lines 100",
+    "enforce": "istanbul check-coverage --statement 90 --branch 90 --function 90 --lines 90",
     "lint": "eslint .",
     "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && yarn version --new-version major && git push origin && git push origin --tags",
     "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && yarn version --new-version minor && git push origin && git push origin --tags",

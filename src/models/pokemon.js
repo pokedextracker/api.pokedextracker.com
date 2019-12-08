@@ -3,6 +3,7 @@
 const Bluebird = require('bluebird');
 
 const Bookshelf           = require('../libraries/bookshelf');
+const Box                 = require('./box');
 const Evolution           = require('./evolution');
 const GameFamily          = require('./game-family');
 const GameFamilyDexNumber = require('./game-family-dex-number');
@@ -17,8 +18,36 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
   game_family_dex_numbers () {
     return this.hasMany(GameFamilyDexNumber, 'pokemon_id');
   },
+  boxes () {
+    return this.hasMany(Box, 'pokemon_id');
+  },
   locations () {
     return this.hasMany(Location, 'pokemon_id');
+  },
+  box (query) {
+    if (query.game_family === undefined || query.regional === undefined) {
+      return null;
+    }
+
+    const box = this.related('boxes').models.find((m) => {
+      return m.get('game_family_id') === query.game_family && m.get('regional') === query.regional;
+    });
+
+    if (!box) {
+      return null;
+    }
+
+    return box.get('value');
+  },
+  capture_summary (query) {
+    return Object.assign({
+      id: this.get('id'),
+      national_id: this.get('national_id'),
+      name: this.get('name'),
+      game_family: this.related('game_family').serialize(),
+      form: this.get('form'),
+      box: this.box(query) || this.get('box')
+    }, this.get('dex_number_properties'));
   },
   evolutions (query) {
     return new Evolution()
@@ -59,16 +88,6 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
 
           return numbers;
         }, {});
-    },
-    capture_summary () {
-      return Object.assign({
-        id: this.get('id'),
-        national_id: this.get('national_id'),
-        name: this.get('name'),
-        game_family: this.related('game_family').serialize(),
-        form: this.get('form'),
-        box: this.get('box')
-      }, this.get('dex_number_properties'));
     },
     summary () {
       return {
@@ -152,7 +171,7 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         name: this.get('name'),
         game_family: this.related('game_family').serialize(),
         form: this.get('form'),
-        box: this.get('box')
+        box: this.box(query) || this.get('box')
       }, this.get('dex_number_properties'), {
         locations,
         evolution_family: evolutionFamily
@@ -160,8 +179,8 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
     });
   }
 }, {
-  CAPTURE_SUMMARY_RELATED: ['game_family', 'game_family_dex_numbers'],
-  RELATED: ['game_family', 'game_family_dex_numbers', {
+  CAPTURE_SUMMARY_RELATED: ['boxes', 'game_family', 'game_family_dex_numbers'],
+  RELATED: ['boxes', 'game_family', 'game_family_dex_numbers', {
     locations (qb) {
       qb
         .innerJoin('games', 'locations.game_id', 'games.id')

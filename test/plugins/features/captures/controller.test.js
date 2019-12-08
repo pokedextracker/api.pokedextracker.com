@@ -60,7 +60,7 @@ describe('captures controller', () => {
       return new Pokemon().query((qb) => qb.orderBy('id')).fetchAll({ withRelated: Pokemon.RELATED })
       .get('models')
       .then((pokemon) => Controller.list({ dex: dex.id }, pokemon))
-      .map((capture) => capture.serialize())
+      .map((capture) => capture.serialize({}))
       .then((captures) => {
         expect(captures).to.have.length(2);
         expect(captures[0].pokemon.id).to.eql(firstPokemon.id);
@@ -78,7 +78,7 @@ describe('captures controller', () => {
       .then(() => new Pokemon().query((qb) => qb.orderBy('id')).fetchAll({ withRelated: Pokemon.RELATED }))
       .get('models')
       .then((pokemon) => Controller.list({ dex: dex.id }, pokemon))
-      .map((capture) => capture.serialize())
+      .map((capture) => capture.serialize({}))
       .map((capture) => capture.pokemon.id)
       .then((captures) => {
         expect(captures).to.have.length(2);
@@ -92,7 +92,7 @@ describe('captures controller', () => {
       .then(() => new Pokemon().query((qb) => qb.orderBy('id')).fetchAll({ withRelated: Pokemon.RELATED }))
       .get('models')
       .then((pokemon) => Controller.list({ dex: regionalDex.id }, pokemon))
-      .map((capture) => capture.serialize())
+      .map((capture) => capture.serialize({}))
       .then((captures) => {
         expect(captures).to.have.length(2);
         captures.forEach((capture) => {
@@ -107,7 +107,7 @@ describe('captures controller', () => {
       .then(() => new Pokemon().query((qb) => qb.orderBy('id')).fetchAll({ withRelated: Pokemon.RELATED }))
       .get('models')
       .then((pokemon) => Controller.list({ dex: regionalDex.id }, pokemon))
-      .map((capture) => capture.serialize())
+      .map((capture) => capture.serialize({}))
       .then((captures) => {
         expect(captures[0].pokemon.id).to.eql(firstPokemon.id);
         expect(captures[1].pokemon.id).to.eql(secondPokemon.id);

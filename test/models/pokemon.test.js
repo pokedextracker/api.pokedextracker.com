@@ -52,6 +52,26 @@ describe('pokemon model', () => {
     .then(() => Knex('evolutions').insert([levelEvolution, breedEvolution, stoneEvolution, alolaEvolution, spearowEvolution]));
   });
 
+  describe('capture_summary', () => {
+
+    it('only includes the fields needed for the tracker view', () => {
+      return new Pokemon({ id: pichu.id }).fetch({ withRelated: Pokemon.RELATED })
+      .then((pokemon) => {
+        expect(pokemon.capture_summary({})).to.have.all.keys([
+          'id',
+          'national_id',
+          'name',
+          'game_family',
+          'form',
+          'box',
+          'gold_silver_id',
+          'sun_moon_id'
+        ]);
+      });
+    });
+
+  });
+
   describe('evolutions', () => {
 
     it('only gets the models with the associated evolution_family_id', () => {
@@ -116,26 +136,6 @@ describe('pokemon model', () => {
             gold_silver_id: 172,
             sun_moon_id: 24
           });
-        });
-      });
-
-    });
-
-    describe('capture_summary', () => {
-
-      it('only includes the fields needed for the tracker view', () => {
-        return new Pokemon({ id: pichu.id }).fetch({ withRelated: Pokemon.RELATED })
-        .then((pokemon) => {
-          expect(pokemon.get('capture_summary')).to.have.all.keys([
-            'id',
-            'national_id',
-            'name',
-            'game_family',
-            'form',
-            'box',
-            'gold_silver_id',
-            'sun_moon_id'
-          ]);
         });
       });
 
