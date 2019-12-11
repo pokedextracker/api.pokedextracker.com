@@ -46,7 +46,7 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
       name: this.get('name'),
       game_family: this.related('game_family').serialize(),
       form: this.get('form'),
-      box: this.box(query) || this.get('box')
+      box: this.box(query)
     }, this.get('dex_number_properties'));
   },
   evolutions (query) {
@@ -171,7 +171,7 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         name: this.get('name'),
         game_family: this.related('game_family').serialize(),
         form: this.get('form'),
-        box: this.box(query) || this.get('box')
+        box: this.box(query)
       }, this.get('dex_number_properties'), {
         locations,
         evolution_family: evolutionFamily
