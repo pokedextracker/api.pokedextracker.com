@@ -33,5 +33,5 @@ module.exports = Bookshelf.model('Capture', Bookshelf.Model.extend({
     };
   }
 }, {
-  RELATED: ['pokemon', 'pokemon.game_family', 'pokemon.game_family_dex_numbers']
+  RELATED: ['pokemon', 'pokemon.boxes', 'pokemon.game_family', 'pokemon.game_family_dex_numbers']
 }));
