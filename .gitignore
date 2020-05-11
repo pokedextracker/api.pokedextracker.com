@@ -105,3 +105,5 @@ tags
 .vimrc
 
 # End of https://www.gitignore.io/api/vim,node,macos
+
+.env*
