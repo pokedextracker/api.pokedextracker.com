@@ -48,7 +48,6 @@ server.register([
   require('./plugins/services/auth'),
   require('./plugins/features/captures'),
   require('./plugins/features/dexes'),
-  require('./plugins/features/donations'),
   require('./plugins/features/games'),
   require('./plugins/features/health'),
   require('./plugins/features/pokemon'),

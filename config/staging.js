@@ -18,6 +18,5 @@ module.exports = {
   SALT_ROUNDS: 10,
   SLACK_URL: '',
   STATSD_HOST: process.env.STATSD_HOST,
-  STRIPE_API_KEY: process.env.STRIPE_API_KEY,
   VERSION: process.env.VERSION || Package.version
 };

@@ -14,6 +14,3 @@ CreateBoomError('UnprocessableEntity', 422, (message) => message);
 
 // postgres errors
 exports.DuplicateKey = (err) => err.message.includes('duplicate key value');
-
-// stripe errors
-exports.GenericStripe = (err) => err.type && err.type.indexOf('Stripe') === 0;
