@@ -151,6 +151,8 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
     .spread((evolutionFamily, gameFamily) => {
       const locations = this.related('locations')
         .filter((l) => {
+          // If there is no game family passed in through the query param, it
+          // should include all locations.
           if (!gameFamily) {
             return true;
           }
@@ -158,6 +160,13 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
           const locationGameFamily = l.related('game').related('game_family');
 
           if (query.regional) {
+            // If the game we're filtering by is the regional sword and shield
+            // expansion pass dexes, then it should include the locations for
+            // the expansion and the original sword and shield.
+            if (gameFamily.id === 'sword_shield_expansion_pass' && locationGameFamily.get('id') === 'sword_shield') {
+              return true;
+            }
+
             return gameFamily.id === locationGameFamily.get('id');
           }
 

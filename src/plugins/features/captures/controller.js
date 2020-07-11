@@ -54,6 +54,10 @@ exports.list = function (query, pokemon) {
         return captures[pokemon[i].get('id')];
       }
 
+      if (!dex.get('regional') && pokemon[i].get('national_order') === -1) {
+        return null;
+      }
+
       const capture = Capture.forge({ dex_id: query.dex, pokemon_id: pokemon[i].get('id'), captured: false });
       capture.relations.dex = dex;
       capture.relations.pokemon = pokemon[i];
