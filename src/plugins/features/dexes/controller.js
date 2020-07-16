@@ -96,6 +96,14 @@ exports.update = function (params, payload, auth) {
               this.groupBy('pokemon.id');
             });
           }
+          // If the dex is being changed to a national dex, delete all duplicate
+          // pokemon.
+          if (payload.regional === false) {
+            this.orWhereIn('pokemon_id', function () {
+              this.select('pokemon.id').from('pokemon');
+              this.where('national_order', '=', -1);
+            });
+          }
         });
       });
     }
