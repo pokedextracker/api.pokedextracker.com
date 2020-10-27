@@ -115,4 +115,70 @@ describe('users update validator', () => {
 
   });
 
+  describe('first_pokemon_db', () => {
+
+    it('defaults to null', () => {
+      const data = {};
+      const result = Joi.validate(data, UsersUpdateValidator);
+
+      expect(result.value.first_pokemon_db).to.be.undefined;
+    });
+
+    it('converts null to undefined', () => {
+      const data = { first_pokemon_db: null };
+      const result = Joi.validate(data, UsersUpdateValidator);
+
+      expect(result.value.first_pokemon_db).to.be.undefined;
+    });
+
+    it('converts the empty string to undefined', () => {
+      const data = { first_pokemon_db: '' };
+      const result = Joi.validate(data, UsersUpdateValidator);
+
+      expect(result.value.first_pokemon_db).to.be.undefined;
+    });
+
+    it('limits to 20 characters', () => {
+      const data = { first_pokemon_db: 'a'.repeat(21) };
+      const result = Joi.validate(data, UsersUpdateValidator);
+
+      expect(result.error.details[0].path).to.eql('first_pokemon_db');
+      expect(result.error.details[0].type).to.eql('string.max');
+    });
+
+  });
+
+  describe('second_pokemon_db', () => {
+
+    it('defaults to undefined', () => {
+      const data = {};
+      const result = Joi.validate(data, UsersUpdateValidator);
+
+      expect(result.value.second_pokemon_db).to.be.undefined;
+    });
+
+    it('converts null to undefined', () => {
+      const data = { second_pokemon_db: null };
+      const result = Joi.validate(data, UsersUpdateValidator);
+
+      expect(result.value.second_pokemon_db).to.be.undefined;
+    });
+
+    it('converts the empty string to undefined', () => {
+      const data = { second_pokemon_db: '' };
+      const result = Joi.validate(data, UsersUpdateValidator);
+
+      expect(result.value.second_pokemon_db).to.be.undefined;
+    });
+
+    it('limits to 20 characters', () => {
+      const data = { second_pokemon_db: 'a'.repeat(21) };
+      const result = Joi.validate(data, UsersUpdateValidator);
+
+      expect(result.error.details[0].path).to.eql('second_pokemon_db');
+      expect(result.error.details[0].type).to.eql('string.max');
+    });
+
+  });
+
 });

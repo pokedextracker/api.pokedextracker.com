@@ -189,11 +189,13 @@ describe('users controller', () => {
 
     it('updates a user', () => {
       const friendCode = '4321-4321-4321';
+      const firstPokemonDB = 'Bulbapedia';
 
-      return Controller.update(firstUser.username, { friend_code_3ds: friendCode }, { id: firstUser.id })
+      return Controller.update(firstUser.username, { friend_code_3ds: friendCode }, { id: firstUser.id }, { first_pokemon_db: firstPokemonDB })
       .then(() => new User({ id: firstUser.id }).fetch())
       .then((user) => {
         expect(user.get('friend_code_3ds')).to.eql(friendCode);
+        expect(user.get('first_pokemon_db')).to.eql(firstPokemonDB);
       });
     });
 
