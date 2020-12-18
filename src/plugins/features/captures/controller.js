@@ -54,7 +54,7 @@ exports.list = function (query, pokemon) {
         return captures[pokemon[i].get('id')];
       }
 
-      if (!dex.get('regional') && pokemon[i].get('national_order') === -1) {
+      if (!dex.get('regional') && pokemon[i].get('national_order') < 0) {
         return null;
       }
 
