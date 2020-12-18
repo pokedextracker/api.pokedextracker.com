@@ -101,7 +101,7 @@ exports.update = function (params, payload, auth) {
           if (payload.regional === false) {
             this.orWhereIn('pokemon_id', function () {
               this.select('pokemon.id').from('pokemon');
-              this.where('national_order', '=', -1);
+              this.where('national_order', '<', 0);
             });
           }
         });
