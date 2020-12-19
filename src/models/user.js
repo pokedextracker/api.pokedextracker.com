@@ -17,6 +17,8 @@ module.exports = Bookshelf.model('User', Bookshelf.Model.extend({
         username: this.get('username'),
         friend_code_3ds: this.get('friend_code_3ds'),
         friend_code_switch: this.get('friend_code_switch'),
+        first_pokemon_db: this.get('first_pokemon_db'),
+        second_pokemon_db: this.get('second_pokemon_db'),
         date_created: this.get('date_created'),
         date_modified: this.get('date_modified')
       };
@@ -30,6 +32,8 @@ module.exports = Bookshelf.model('User', Bookshelf.Model.extend({
         username: this.get('username'),
         friend_code_3ds: this.get('friend_code_3ds'),
         friend_code_switch: this.get('friend_code_switch'),
+        first_pokemon_db: this.get('first_pokemon_db'),
+        second_pokemon_db: this.get('second_pokemon_db'),
         dexes,
         donated: Boolean(this.get('stripe_id')),
         date_created: this.get('date_created'),

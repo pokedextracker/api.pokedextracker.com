@@ -15,5 +15,7 @@ module.exports = Joi.object().keys({
       language: {
         string: { regex: { base: 'must be a valid Switch friend code' } }
       }
-    })
+    }),
+  first_pokemon_db: Joi.string().max(20).empty(['', null]),
+  second_pokemon_db: Joi.string().max(20).empty(['', null])
 });
