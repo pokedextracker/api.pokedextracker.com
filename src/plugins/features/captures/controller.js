@@ -15,6 +15,7 @@ const boxOrdering = {
   Gigantamax: 3
 };
 
+// TODO: remove
 exports.list = function (query, pokemon) {
   let dex;
   let boxQuery;
@@ -93,6 +94,41 @@ exports.list = function (query, pokemon) {
       }
 
       return a.related('pokemon').get('national_order') - b.related('pokemon').get('national_order');
+    });
+  });
+};
+
+exports.listV2 = function (params, pokemon) {
+  let dex;
+
+  return new Dex().query((qb) => {
+    qb.innerJoin('users', 'dexes.user_id', 'users.id');
+    qb.where({ username: params.username, slug: params.slug });
+  }).fetch({ require: true, withRelated: Dex.RELATED_WITH_POKEMON })
+  .catch(Dex.NotFoundError, () => {
+    throw new Errors.NotFound('dex');
+  })
+  .then((d) => {
+    dex = d;
+  })
+  .then(() => new Capture().where('dex_id', dex.id).fetchAll({ withRelated: Capture.RELATED }))
+  .get('models')
+  .reduce((captures, capture) => {
+    capture.relations.dex = dex;
+    captures[capture.get('pokemon_id')] = capture;
+    return captures;
+  }, {})
+  .then((captures) => {
+    return Bluebird.resolve(dex.related('dex_type').related('pokemon').models)
+    .map((p) => {
+      if (captures[p.id]) {
+        return captures[p.id];
+      }
+
+      const capture = Capture.forge({ dex_id: dex.id, pokemon_id: p.id, captured: false });
+      capture.relations.dex = dex;
+      capture.relations.pokemon = pokemon[p.id];
+      return capture;
     });
   });
 };

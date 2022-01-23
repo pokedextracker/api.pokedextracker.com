@@ -4,12 +4,14 @@ const Bluebird = require('bluebird');
 const Bcrypt   = require('bcrypt');
 const Slug     = require('slug');
 
-const Config = require('../../../../config');
-const Dex    = require('../../../models/dex');
-const Errors = require('../../../libraries/errors');
-const JWT    = require('../../../libraries/jwt');
-const Knex   = require('../../../libraries/knex');
-const User   = require('../../../models/user');
+const Config  = require('../../../../config');
+const Dex     = require('../../../models/dex');
+const DexType = require('../../../models/dex-type');
+const Errors  = require('../../../libraries/errors');
+const Game    = require('../../../models/game');
+const JWT     = require('../../../libraries/jwt');
+const Knex    = require('../../../libraries/knex');
+const User    = require('../../../models/user');
 
 exports.list = function (query) {
   return new User().query((qb) => {
@@ -32,11 +34,19 @@ exports.create = function (payload, request) {
   .then((hash) => {
     payload.password = hash;
 
-    return new User().where('username', payload.username).fetch();
+    return Bluebird.all([
+      new User().where('username', payload.username).fetch(),
+      new Game({ id: payload.game }).fetch({ require: true  }),
+      new DexType({ id: payload.dex_type }).fetch({ require: true  })
+    ]);
   })
-  .then((existing) => {
+  .spread((existing, game, dexType) => {
     if (existing) {
       throw new Errors.ExistingUsername();
+    }
+
+    if (game.get('game_family_id') !== dexType.get('game_family_id')) {
+      throw Errors.GameDexTypeMismatch();
     }
 
     const xff = request.headers['x-forwarded-for'];
@@ -58,7 +68,7 @@ exports.create = function (payload, request) {
           slug: Slug(payload.title, { lower: true }),
           shiny: payload.shiny,
           game_id: payload.game,
-          regional: payload.regional
+          dex_type_id: payload.dex_type
         }, { transacting });
       });
     });

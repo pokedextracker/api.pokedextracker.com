@@ -3,7 +3,8 @@
 const Bluebird = require('bluebird');
 
 const Bookshelf           = require('../libraries/bookshelf');
-const Box                 = require('./box');
+const DexType             = require('./dex-type');
+const DexTypePokemon      = require('./dex-type-pokemon');
 const Evolution           = require('./evolution');
 const GameFamily          = require('./game-family');
 const GameFamilyDexNumber = require('./game-family-dex-number');
@@ -18,26 +19,26 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
   game_family_dex_numbers () {
     return this.hasMany(GameFamilyDexNumber, 'pokemon_id');
   },
-  boxes () {
-    return this.hasMany(Box, 'pokemon_id');
+  dex_type_pokemon () {
+    return this.hasMany(DexTypePokemon, 'pokemon_id');
   },
   locations () {
     return this.hasMany(Location, 'pokemon_id');
   },
   box (query) {
-    if (query.game_family === undefined || query.regional === undefined) {
+    if (query.dex_type === undefined) {
       return null;
     }
 
-    const box = this.related('boxes').models.find((m) => {
-      return m.get('game_family_id') === query.game_family && m.get('regional') === query.regional;
+    const dexTypePokemon = this.related('dex_type_pokemon').models.find((dtp) => {
+      return dtp.get('dex_type_id') === query.dex_type;
     });
 
-    if (!box) {
+    if (!dexTypePokemon) {
       return null;
     }
 
-    return box.get('value');
+    return dexTypePokemon.get('box') || null;
   },
   capture_summary (query) {
     return Object.assign({
@@ -100,8 +101,22 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
   },
   serialize (request) {
     const query = request.query || {};
+    let regional = query.regional;
+    let gameFamilyId = query.game_family;
+    const dexType = query.dex_type;
 
-    return this.evolutions(query)
+    return Bluebird.resolve(dexType && new DexType({ id: dexType }).fetch({ require: true }))
+    .then((dt) => {
+      if (dt) {
+        regional = dt.get('tags').includes('regional');
+        gameFamilyId = dt.get('game_family_id');
+      }
+
+      return this.evolutions({
+        regional,
+        game_family: gameFamilyId
+      });
+    })
     .reduce((family, evolution) => {
       const i = evolution.get('stage') - 1;
       const breed = evolution.get('trigger') === 'breed';
@@ -145,7 +160,7 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
       }
       return Bluebird.all([
         family,
-        query.game_family && new GameFamily({ id: query.game_family }).fetch({ require: true })
+        gameFamilyId && new GameFamily({ id: gameFamilyId }).fetch({ require: true })
       ]);
     })
     .spread((evolutionFamily, gameFamily) => {
@@ -159,7 +174,7 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
 
           const locationGameFamily = l.related('game').related('game_family');
 
-          if (query.regional) {
+          if (regional) {
             // If the game we're filtering by is the regional sword and shield
             // expansion pass dexes, then it should include the locations for
             // the expansion and the original sword and shield.
@@ -180,7 +195,7 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         name: this.get('name'),
         game_family: this.related('game_family').serialize(),
         form: this.get('form'),
-        box: this.box(query)
+        box: this.box({ dex_type: dexType })
       }, this.get('dex_number_properties'), {
         locations,
         evolution_family: evolutionFamily
@@ -188,8 +203,8 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
     });
   }
 }, {
-  CAPTURE_SUMMARY_RELATED: ['boxes', 'game_family', 'game_family_dex_numbers'],
-  RELATED: ['boxes', 'game_family', 'game_family_dex_numbers', {
+  CAPTURE_SUMMARY_RELATED: ['dex_type_pokemon', 'game_family', 'game_family_dex_numbers'],
+  RELATED: ['dex_type_pokemon', 'game_family', 'game_family_dex_numbers', {
     locations (qb) {
       qb
         .innerJoin('games', 'locations.game_id', 'games.id')

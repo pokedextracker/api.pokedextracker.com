@@ -5,6 +5,7 @@ const Slug     = require('slug');
 
 const Capture = require('../../../models/capture');
 const Dex     = require('../../../models/dex');
+const DexType = require('../../../models/dex-type');
 const Errors  = require('../../../libraries/errors');
 const Game    = require('../../../models/game');
 const Knex    = require('../../../libraries/knex');
@@ -33,19 +34,35 @@ exports.create = function (params, payload, auth) {
       throw new Errors.EmptySlug();
     }
 
-    return new Dex().where({ user_id: auth.id, slug: payload.slug }).fetch();
+    return Bluebird.all([
+      new Dex().where({ user_id: auth.id, slug: payload.slug }).fetch(),
+      new Game({ id: payload.game }).fetch({ require: true  }),
+      new DexType({ id: payload.dex_type }).fetch({ require: true  })
+    ]);
   })
-  .then((existing) => {
+  .spread((existing, game, dexType) => {
     if (existing) {
       throw new Errors.ExistingDex();
     }
 
+    if (game.get('game_family_id') !== dexType.get('game_family_id')) {
+      throw Errors.GameDexTypeMismatch();
+    }
+
     payload.game_id = payload.game;
     delete payload.game;
+    payload.dex_type_id = payload.dex_type;
+    delete payload.dex_type;
 
     return new Dex().save(payload);
   })
   .then((dex) => dex.refresh({ withRelated: Dex.RELATED }))
+  .catch(Game.NotFoundError, () => {
+    throw new Errors.NotFound('game');
+  })
+  .catch(DexType.NotFoundError, () => {
+    throw new Errors.NotFound('dex type');
+  })
   .catch(Errors.DuplicateKey, () => {
     throw new Errors.ExistingDex();
   });
@@ -60,10 +77,11 @@ exports.update = function (params, payload, auth) {
 
     return Bluebird.all([
       new Dex().where({ user_id: auth.id, slug: params.slug }).fetch({ require: true, withRelated: ['game'] }),
-      payload.game && new Game({ id: payload.game }).fetch({ require: true, withRelated: ['game_family'] })
+      payload.game && new Game({ id: payload.game }).fetch({ require: true, withRelated: ['game_family'] }),
+      payload.dex_type && new DexType({ id: payload.dex_type }).fetch({ require: true })
     ]);
   })
-  .spread((dex, game) => {
+  .spread((dex, game, dexType) => {
     if (payload.title) {
       payload.slug = Slug(payload.title, { lower: true });
 
@@ -72,9 +90,13 @@ exports.update = function (params, payload, auth) {
       }
     }
 
+    if (game && dexType && game.get('game_family_id') !== dexType.get('game_family_id')) {
+      throw Errors.GameDexTypeMismatch();
+    }
+
     let captures;
 
-    if (game || payload.regional) {
+    if (game || dexType && dexType.get('tags').includes('regional')) {
       captures = new Capture().query((qb) => {
         qb.where('dex_id', dex.get('id'));
 
@@ -88,7 +110,7 @@ exports.update = function (params, payload, auth) {
               this.where('game_families.order', '>', game.related('game_family').get('order'));
             });
           }
-          if (payload.regional && gameFamilyId) {
+          if (dexType && dexType.get('tags').includes('regional') && gameFamilyId) {
             this.orWhereIn('pokemon_id', function () {
               this.select('pokemon.id').from('pokemon');
               this.leftOuterJoin('game_family_dex_numbers', 'pokemon.id', 'game_family_dex_numbers.pokemon_id');
@@ -98,7 +120,7 @@ exports.update = function (params, payload, auth) {
           }
           // If the dex is being changed to a national dex, delete all duplicate
           // pokemon.
-          if (payload.regional === false) {
+          if (dexType && !dexType.get('tags').includes('regional')) {
             this.orWhereIn('pokemon_id', function () {
               this.select('pokemon.id').from('pokemon');
               this.where('national_order', '<', 0);
@@ -110,6 +132,8 @@ exports.update = function (params, payload, auth) {
 
     payload.game_id = payload.game;
     delete payload.game;
+    payload.dex_type_id = payload.dex_type;
+    delete payload.dex_type;
 
     return Knex.transaction((transacting) => {
       return Bluebird.all([
