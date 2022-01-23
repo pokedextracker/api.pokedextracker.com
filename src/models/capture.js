@@ -19,11 +19,8 @@ module.exports = Bookshelf.model('Capture', Bookshelf.Model.extend({
     const query = request.query || {};
     const dex = this.relations.dex;
 
-    if (query.game_family === undefined && dex) {
-      query.game_family = dex.related('game').related('game_family').get('id');
-    }
-    if (query.regional === undefined && dex) {
-      query.regional = dex.get('regional');
+    if (query.dex_type === undefined && dex) {
+      query.dex_type = dex.get('dex_type_id');
     }
 
     return {
@@ -33,5 +30,5 @@ module.exports = Bookshelf.model('Capture', Bookshelf.Model.extend({
     };
   }
 }, {
-  RELATED: ['pokemon', 'pokemon.boxes', 'pokemon.game_family', 'pokemon.game_family_dex_numbers']
+  RELATED: ['pokemon', 'pokemon.dex_type_pokemon', 'pokemon.game_family', 'pokemon.game_family_dex_numbers']
 }));

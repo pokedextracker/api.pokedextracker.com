@@ -47,6 +47,7 @@ server.register([
   require('./plugins/services/errors'),
   require('./plugins/services/auth'),
   require('./plugins/features/captures'),
+  require('./plugins/features/dex-types'),
   require('./plugins/features/dexes'),
   require('./plugins/features/games'),
   require('./plugins/features/health'),

@@ -5,7 +5,7 @@ module.exports = {
   DB_HOST: 'localhost',
   DB_NAME: 'pokedex_tracker',
   DB_PASSWORD: '',
-  DB_PORT: 5432,
+  DB_PORT: process.env.DB_PORT || 9876,
   DB_USER: 'pokedex_tracker_admin',
   DRAIN_TIMEOUT: 5000,
   ENVIRONMENT: 'development',

@@ -6,5 +6,5 @@ module.exports = Joi.object().keys({
   title: Joi.string().max(300).trim(),
   shiny: Joi.boolean(),
   game: Joi.string().max(50).trim(),
-  regional: Joi.boolean()
+  dex_type: Joi.number().integer()
 });
