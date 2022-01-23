@@ -36,6 +36,37 @@ echo
 helm repo update
 
 echo
+echo -e "\033[1;32m==> Running migrations from ${TAG} on staging...\033[0m"
+echo
+
+kubectl run \
+  --context ${KUBE_CONTEXT} \
+  migrations-${TAG} \
+  --namespace staging \
+  --image=${REPO}:${TAG} \
+  --restart=Never \
+  --attach \
+  --rm \
+  --overrides="$(helm template \
+    --values .kube/staging.yaml \
+    --set-string processes.api.image.tag=${TAG} \
+    --show-only templates/deployment.yaml \
+    pokedextracker/app \
+    | yq -j r - \
+    | jq '{
+      "spec": {
+        "containers": [{
+          "name": "migrations-'"${TAG}"'",
+          "image": "'"${REPO}"':'"${TAG}"'",
+          "command": ["yarn", "db:migrate"],
+          "env": .spec.template.spec.containers[0].env
+        }]
+      }
+    }'
+  )" \
+  --command -- yarn db:migrate
+
+echo
 echo -e "\033[1;32m==> Deploying ${TAG} to staging on ${KUBE_CONTEXT}...\033[0m"
 echo
 
@@ -59,6 +90,37 @@ echo -n "Enter a value: "
 read proceed
 
 if [ "${proceed}" == "yes" ]; then
+  echo
+  echo -e "\033[1;32m==> Running migrations from ${TAG} on production...\033[0m"
+  echo
+
+  kubectl run \
+    --context ${KUBE_CONTEXT} \
+    migrations-${TAG} \
+    --namespace production \
+    --image=${REPO}:${TAG} \
+    --restart=Never \
+    --attach \
+    --rm \
+    --overrides="$(helm template \
+      --values .kube/production.yaml \
+      --set-string processes.api.image.tag=${TAG} \
+      --show-only templates/deployment.yaml \
+      pokedextracker/app \
+      | yq -j r - \
+      | jq '{
+        "spec": {
+          "containers": [{
+            "name": "migrations-'"${TAG}"'",
+            "image": "'"${REPO}"':'"${TAG}"'",
+            "command": ["yarn", "db:migrate"],
+            "env": .spec.template.spec.containers[0].env
+          }]
+        }
+      }'
+    )" \
+    --command -- yarn db:migrate
+
   echo
   echo -e "\033[1;32m==> Deploying ${TAG} to production on ${KUBE_CONTEXT}...\033[0m"
   echo
