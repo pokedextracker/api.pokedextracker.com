@@ -25,20 +25,23 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
   locations () {
     return this.hasMany(Location, 'pokemon_id');
   },
-  box (query) {
-    if (query.dex_type === undefined) {
-      return null;
+  dex_specific_details (dexTypeId) {
+    if (!dexTypeId) {
+      return {};
     }
 
     const dexTypePokemon = this.related('dex_type_pokemon').models.find((dtp) => {
-      return dtp.get('dex_type_id') === query.dex_type;
+      return dtp.get('dex_type_id') === dexTypeId;
     });
 
     if (!dexTypePokemon) {
-      return null;
+      return {};
     }
 
-    return dexTypePokemon.get('box') || null;
+    return {
+      box: dexTypePokemon.get('box') || null,
+      dex_number: dexTypePokemon.get('dex_number')
+    };
   },
   capture_summary (query) {
     return Object.assign({
@@ -46,9 +49,8 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
       national_id: this.get('national_id'),
       name: this.get('name'),
       game_family: this.related('game_family').serialize(),
-      form: this.get('form'),
-      box: this.box(query)
-    }, this.get('dex_number_properties'));
+      form: this.get('form')
+    }, this.get('dex_number_properties'), this.dex_specific_details(query.dex_type));
   },
   evolutions (query) {
     return new Evolution()
@@ -69,11 +71,10 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
           )
         `, [query.game_family, query.game_family]);
       }
-      if (query.regional) {
-        qb.joinRaw('LEFT OUTER JOIN game_family_dex_numbers AS evolved_dex_numbers ON evolved.id = evolved_dex_numbers.pokemon_id');
-        qb.joinRaw('LEFT OUTER JOIN game_family_dex_numbers AS evolving_dex_numbers ON evolving.id = evolving_dex_numbers.pokemon_id');
-        qb.whereRaw(`evolved_dex_numbers.game_family_id = ? AND evolving_dex_numbers.game_family_id = ?`, [query.game_family, query.game_family]);
-      }
+
+      qb.joinRaw('LEFT OUTER JOIN dex_types_pokemon AS evolved_dex_numbers ON evolved.id = evolved_dex_numbers.pokemon_id');
+      qb.joinRaw('LEFT OUTER JOIN dex_types_pokemon AS evolving_dex_numbers ON evolving.id = evolving_dex_numbers.pokemon_id');
+      qb.whereRaw(`evolved_dex_numbers.dex_type_id = ? AND evolving_dex_numbers.dex_type_id = ?`, [query.dex_type, query.dex_type]);
 
       qb.orderByRaw('CASE WHEN trigger = \'breed\' THEN evolving.national_id ELSE evolved.national_id END, trigger DESC, evolved.national_order ASC');
     })
@@ -113,7 +114,7 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
       }
 
       return this.evolutions({
-        regional,
+        dex_type: dexType,
         game_family: gameFamilyId
       });
     })
@@ -194,9 +195,8 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
         national_id: this.get('national_id'),
         name: this.get('name'),
         game_family: this.related('game_family').serialize(),
-        form: this.get('form'),
-        box: this.box({ dex_type: dexType })
-      }, this.get('dex_number_properties'), {
+        form: this.get('form')
+      }, this.get('dex_number_properties'), this.dex_specific_details(dexType), {
         locations,
         evolution_family: evolutionFamily
       });
