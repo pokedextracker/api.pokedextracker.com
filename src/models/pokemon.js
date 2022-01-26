@@ -109,7 +109,9 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
     return Bluebird.resolve(dexType && new DexType({ id: dexType }).fetch({ require: true }))
     .then((dt) => {
       if (dt) {
-        regional = dt.get('tags').includes('regional');
+        // "game national" is currently just for BDSP and for this dex type, we
+        // only want to show locations relevant to this game.
+        regional = dt.get('tags').includes('regional') || dt.get('tags').includes('game national');
         gameFamilyId = dt.get('game_family_id');
       }
 
