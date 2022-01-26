@@ -113,8 +113,9 @@ exports.update = function (params, payload, auth) {
           if (dexType && dexType.get('tags').includes('regional') && gameFamilyId) {
             this.orWhereIn('pokemon_id', function () {
               this.select('pokemon.id').from('pokemon');
-              this.leftOuterJoin('game_family_dex_numbers', 'pokemon.id', 'game_family_dex_numbers.pokemon_id');
-              this.havingRaw('EVERY(game_family_dex_numbers.game_family_id != ? OR game_family_dex_numbers.game_family_id IS NULL)', [gameFamilyId]);
+              this.leftOuterJoin('dex_type_pokemon', 'pokemon.id', 'dex_type_pokemon.pokemon_id');
+              this.leftOuterJoin('dex_types', 'dex_types.id', 'dex_type_pokemon.dex_type_id');
+              this.havingRaw('EVERY(dex_types.game_family_id != ? OR dex_types.game_family_id IS NULL)', [gameFamilyId]);
               this.groupBy('pokemon.id');
             });
           }
