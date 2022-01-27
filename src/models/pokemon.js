@@ -188,6 +188,13 @@ module.exports = Bookshelf.model('Pokemon', Bookshelf.Model.extend({
             return gameFamily.id === locationGameFamily.get('id');
           }
 
+          // For national dexes that aren't BDSP, don't include BDSP locations
+          // because we can't trade with that game yet. Remove this once you can
+          // trade to and from BDSP.
+          if (gameFamily.id !== 'brilliant_diamond_shining_pearl' && locationGameFamily.get('id') === 'brilliant_diamond_shining_pearl') {
+            return false;
+          }
+
           return gameFamily.get('generation') >= locationGameFamily.get('generation');
         })
         .map((l) => l.serialize(request));
