@@ -159,6 +159,88 @@ describe('users create validator', () => {
 
   });
 
+  describe('first_pokemon_db', () => {
+
+    it('is optional', () => {
+      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, game: 'a', regional: true };
+      const result = Joi.validate(data, UsersCreateValidator);
+
+      expect(result.error).to.not.exist;
+    });
+
+    it('can be a string', () => {
+      const data = { username: 'testing', password: 'testtest', first_pokemon_db: 'Serebii', title: 'Test', shiny: false, game: 'a', regional: true };
+      const result = Joi.validate(data, UsersCreateValidator);
+
+      expect(result.error).to.not.exist;
+      expect(result.value.first_pokemon_db).to.eql(data.first_pokemon_db);
+    });
+
+    it('limits to 20 characters', () => {
+      const data = { username: 'testing', password: 'testtest', first_pokemon_db: 'a'.repeat(21), title: 'Test', shiny: false, game: 'a', regional: true };
+      const result = Joi.validate(data, UsersCreateValidator);
+
+      expect(result.error.details[0].path).to.eql('first_pokemon_db');
+      expect(result.error.details[0].type).to.eql('string.max');
+    });
+
+    it('converts null to undefined', () => {
+      const data = { username: 'testing', password: 'testtest', first_pokemon_db: null, title: 'Test', shiny: false, game: 'a', regional: true };
+      const result = Joi.validate(data, UsersCreateValidator);
+
+      expect(result.value.first_pokemon_db).to.be.undefined;
+    });
+
+    it('converts the empty string to undefined', () => {
+      const data = { username: 'testing', password: 'testtest', first_pokemon_db: '', title: 'Test', shiny: false, game: 'a', regional: true };
+      const result = Joi.validate(data, UsersCreateValidator);
+
+      expect(result.value.first_pokemon_db).to.be.undefined;
+    });
+
+  });
+
+  describe('second_pokemon_db', () => {
+
+    it('is optional', () => {
+      const data = { username: 'testing', password: 'testtest', title: 'Test', shiny: false, game: 'a', regional: true };
+      const result = Joi.validate(data, UsersCreateValidator);
+
+      expect(result.error).to.not.exist;
+    });
+
+    it('can be a string', () => {
+      const data = { username: 'testing', password: 'testtest', second_pokemon_db: 'Serebii', title: 'Test', shiny: false, game: 'a', regional: true };
+      const result = Joi.validate(data, UsersCreateValidator);
+
+      expect(result.error).to.not.exist;
+      expect(result.value.second_pokemon_db).to.eql(data.second_pokemon_db);
+    });
+
+    it('limits to 20 characters', () => {
+      const data = { username: 'testing', password: 'testtest', second_pokemon_db: 'a'.repeat(21), title: 'Test', shiny: false, game: 'a', regional: true };
+      const result = Joi.validate(data, UsersCreateValidator);
+
+      expect(result.error.details[0].path).to.eql('second_pokemon_db');
+      expect(result.error.details[0].type).to.eql('string.max');
+    });
+
+    it('converts null to undefined', () => {
+      const data = { username: 'testing', password: 'testtest', second_pokemon_db: null, title: 'Test', shiny: false, game: 'a', regional: true };
+      const result = Joi.validate(data, UsersCreateValidator);
+
+      expect(result.value.second_pokemon_db).to.be.undefined;
+    });
+
+    it('converts the empty string to undefined', () => {
+      const data = { username: 'testing', password: 'testtest', second_pokemon_db: '', title: 'Test', shiny: false, game: 'a', regional: true };
+      const result = Joi.validate(data, UsersCreateValidator);
+
+      expect(result.value.second_pokemon_db).to.be.undefined;
+    });
+
+  });
+
   describe('referrer', () => {
 
     it('is optional', () => {

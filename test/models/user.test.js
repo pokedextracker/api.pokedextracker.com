@@ -19,6 +19,8 @@ describe('user model', () => {
           'username',
           'friend_code_3ds',
           'friend_code_switch',
+          'first_pokemon_db',
+          'second_pokemon_db',
           'date_created',
           'date_modified'
         ]);
@@ -41,6 +43,8 @@ describe('user model', () => {
           'username',
           'friend_code_3ds',
           'friend_code_switch',
+          'first_pokemon_db',
+          'second_pokemon_db',
           'dexes',
           'donated',
           'date_created',

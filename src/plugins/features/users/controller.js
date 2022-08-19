@@ -58,6 +58,8 @@ exports.create = function (payload, request) {
         password: payload.password,
         friend_code_3ds: payload.friend_code_3ds,
         friend_code_switch: payload.friend_code_switch,
+        first_pokemon_db: payload.first_pokemon_db,
+        second_pokemon_db: payload.second_pokemon_db,
         referrer: payload.referrer,
         last_ip: ip
       }, { transacting })
