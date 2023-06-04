@@ -52,14 +52,14 @@ kubectl run \
     --set-string processes.api.image.tag=${TAG} \
     --show-only templates/deployment.yaml \
     pokedextracker/app \
-    | yq -j r - \
-    | jq '{
+    | yq -o=json - \
+    | jq -s '{
       "spec": {
         "containers": [{
           "name": "migrations-'"${TAG}"'",
           "image": "'"${REPO}"':'"${TAG}"'",
           "command": ["yarn", "db:migrate"],
-          "env": .spec.template.spec.containers[0].env
+          "env": .[0].spec.template.spec.containers[0].env
         }]
       }
     }'
@@ -107,14 +107,14 @@ if [ "${proceed}" == "yes" ]; then
       --set-string processes.api.image.tag=${TAG} \
       --show-only templates/deployment.yaml \
       pokedextracker/app \
-      | yq -j r - \
-      | jq '{
+      | yq -o=json - \
+      | jq -s '{
         "spec": {
           "containers": [{
             "name": "migrations-'"${TAG}"'",
             "image": "'"${REPO}"':'"${TAG}"'",
             "command": ["yarn", "db:migrate"],
-            "env": .spec.template.spec.containers[0].env
+            "env": .[0].spec.template.spec.containers[0].env
           }]
         }
       }'
