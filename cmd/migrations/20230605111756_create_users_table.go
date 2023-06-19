@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/go-pg/pg/v10/orm"
 	"github.com/pkg/errors"
-	"github.com/robinjoseph08/go-pg-migrations/v3"
+	migrations "github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
 func init() {
