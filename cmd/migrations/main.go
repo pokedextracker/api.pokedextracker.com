@@ -5,7 +5,7 @@ import (
 
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/config"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/database"
-	migrations "github.com/robinjoseph08/go-pg-migrations/v3"
+	"github.com/robinjoseph08/go-pg-migrations/v3"
 	"github.com/robinjoseph08/golib/logger"
 )
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/pkg/errors"
 	"github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
@@ -12,7 +13,7 @@ func init() {
 				ADD COLUMN us_location TEXT,
 				ADD COLUMN um_location TEXT
 		`)
-		return err
+		return errors.WithStack(err)
 	}
 
 	down := func(db orm.DB) error {
@@ -21,7 +22,7 @@ func init() {
 				DROP COLUMN us_location,
 				DROP COLUMN um_location
 		`)
-		return err
+		return errors.WithStack(err)
 	}
 
 	opts := migrations.MigrationOptions{}

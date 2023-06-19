@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/pkg/errors"
 	"github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
@@ -18,21 +19,21 @@ func init() {
 				PRIMARY KEY (user_id, pokemon_id)
 			)
 		`); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec("ALTER TABLE captures ADD CONSTRAINT captures_user_id_foreign FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec("CREATE INDEX captures_user_id_index ON captures (user_id)"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		_, err := db.Exec("ALTER TABLE captures ADD CONSTRAINT captures_pokemon_id_foreign FOREIGN KEY (pokemon_id) REFERENCES pokemon (national_id) ON DELETE CASCADE")
-		return err
+		return errors.WithStack(err)
 	}
 
 	down := func(db orm.DB) error {
 		_, err := db.Exec("DROP TABLE captures")
-		return err
+		return errors.WithStack(err)
 	}
 
 	opts := migrations.MigrationOptions{}

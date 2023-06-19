@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/pkg/errors"
 	"github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
@@ -20,14 +21,14 @@ func init() {
 				DROP COLUMN mountain_kalos_id,
 				DROP COLUMN alola_id
 		`); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		_, err := db.Exec(`
 			ALTER TABLE dexes
 				DROP COLUMN generation,
 				DROP COLUMN region
 		`)
-		return err
+		return errors.WithStack(err)
 	}
 
 	down := func(db orm.DB) error {
@@ -44,14 +45,14 @@ func init() {
 				ADD COLUMN mountain_kalos_id INTEGER,
 				ADD COLUMN alola_id INTEGER
 		`); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		_, err := db.Exec(`
 			ALTER TABLE dexes
 				ADD COLUMN generation INTEGER,
 				ADD COLUMN region TEXT
 		`)
-		return err
+		return errors.WithStack(err)
 	}
 
 	opts := migrations.MigrationOptions{}

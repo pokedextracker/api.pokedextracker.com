@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/pkg/errors"
 	"github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
@@ -44,7 +45,7 @@ func init() {
 		for {
 			count, err := upBatch(db)
 			if err != nil {
-				return err
+				return errors.WithStack(err)
 			}
 			if count != limit {
 				break
@@ -56,7 +57,7 @@ func init() {
 			ALTER TABLE dexes ALTER COLUMN regional SET NOT NULL;
 			COMMIT;
 		`)
-		return err
+		return errors.WithStack(err)
 	}
 
 	down := func(db orm.DB) error {
@@ -66,12 +67,12 @@ func init() {
 			ALTER TABLE dexes ALTER COLUMN regional DROP NOT NULL;
 			COMMIT;
 		`); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		for {
 			count, err := downBatch(db)
 			if err != nil {
-				return err
+				return errors.WithStack(err)
 			}
 			if count != limit {
 				break

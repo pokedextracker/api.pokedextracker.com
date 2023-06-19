@@ -4,6 +4,7 @@ import (
 	"reflect"
 
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/pkg/errors"
 	"github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
@@ -56,19 +57,19 @@ func init() {
 				dex_number INTEGER NOT NULL
 			)
 		`); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec("ALTER TABLE game_family_dex_numbers ADD CONSTRAINT game_family_dex_numbers_game_family_id_foreign FOREIGN KEY (game_family_id) REFERENCES game_families (id)"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec("ALTER TABLE game_family_dex_numbers ADD CONSTRAINT game_family_dex_numbers_pokemon_id_foreign FOREIGN KEY (pokemon_id) REFERENCES pokemon (id)"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec("CREATE INDEX game_family_dex_numbers_pokemon_id_index ON game_family_dex_numbers (pokemon_id)"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec("ALTER TABLE game_family_dex_numbers ADD CONSTRAINT game_family_dex_numbers_pkey PRIMARY KEY (game_family_id, pokemon_id)"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		gameFamilies := []gameFamily{}
@@ -76,10 +77,10 @@ func init() {
 		dexNumbers := []dexNumber{}
 
 		if err := db.Model(&poke).Select(); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if err := db.Model(&gameFamilies).Column("id").Select(); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		gameFamilyIDs := map[string]bool{}
@@ -124,12 +125,12 @@ func init() {
 		}
 
 		_, err := db.Model(&dexNumbers).Insert()
-		return err
+		return errors.WithStack(err)
 	}
 
 	down := func(db orm.DB) error {
 		_, err := db.Exec("DROP TABLE game_family_dex_numbers")
-		return err
+		return errors.WithStack(err)
 	}
 
 	opts := migrations.MigrationOptions{}

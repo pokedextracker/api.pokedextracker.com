@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/pkg/errors"
 	"github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
@@ -12,7 +13,7 @@ func init() {
 				ADD COLUMN last_ip VARCHAR(45),
 				ADD COLUMN last_login TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 		`)
-		return err
+		return errors.WithStack(err)
 	}
 
 	down := func(db orm.DB) error {
@@ -21,7 +22,7 @@ func init() {
 				DROP COLUMN last_ip,
 				DROP COLUMN last_login
 		`)
-		return err
+		return errors.WithStack(err)
 	}
 
 	opts := migrations.MigrationOptions{}

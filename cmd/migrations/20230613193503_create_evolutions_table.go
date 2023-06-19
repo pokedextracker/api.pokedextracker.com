@@ -2,16 +2,17 @@ package main
 
 import (
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/pkg/errors"
 	"github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
 func init() {
 	up := func(db orm.DB) error {
 		if _, err := db.Exec("ALTER TABLE pokemon ADD COLUMN evolution_family_id INTEGER"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec("CREATE INDEX pokemon_evolution_family_id_index ON pokemon (evolution_family_id)"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec(`
 			CREATE TABLE evolutions (
@@ -30,25 +31,25 @@ func init() {
 				PRIMARY KEY (evolving_pokemon_id, evolved_pokemon_id)
 			)
 		`); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec("ALTER TABLE evolutions ADD CONSTRAINT evolutions_evolving_pokemon_id_foreign FOREIGN KEY (evolving_pokemon_id) REFERENCES pokemon (national_id)"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec("ALTER TABLE evolutions ADD CONSTRAINT evolutions_evolved_pokemon_id_foreign FOREIGN KEY (evolved_pokemon_id) REFERENCES pokemon (national_id)"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		_, err := db.Exec("CREATE INDEX evolutions_evolution_family_id_index ON evolutions (evolution_family_id)")
-		return err
+		return errors.WithStack(err)
 	}
 
 	down := func(db orm.DB) error {
 		_, err := db.Exec("DROP TABLE evolutions")
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		_, err = db.Exec("ALTER TABLE pokemon DROP COLUMN evolution_family_id")
-		return err
+		return errors.WithStack(err)
 	}
 
 	opts := migrations.MigrationOptions{}

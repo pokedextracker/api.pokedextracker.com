@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/pkg/errors"
 	"github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
@@ -32,15 +33,15 @@ func init() {
 				date_modified timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 			)
 		`); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		_, err := db.Exec("CREATE INDEX pokemon_national_id_index ON pokemon (national_id)")
-		return err
+		return errors.WithStack(err)
 	}
 
 	down := func(db orm.DB) error {
 		_, err := db.Exec("DROP TABLE pokemon")
-		return err
+		return errors.WithStack(err)
 	}
 
 	opts := migrations.MigrationOptions{}

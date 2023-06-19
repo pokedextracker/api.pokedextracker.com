@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/pkg/errors"
 	"github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
@@ -13,7 +14,7 @@ func init() {
 				ADD COLUMN sun_location TEXT,
 				ADD COLUMN moon_location TEXT
 		`); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		update := "UPDATE pokemon SET generation = ? WHERE national_id BETWEEN ? AND ?"
@@ -29,12 +30,12 @@ func init() {
 		}
 		for _, p := range params {
 			if _, err := db.Exec(update, p.generation, p.start, p.end); err != nil {
-				return err
+				return errors.WithStack(err)
 			}
 		}
 
 		_, err := db.Exec("ALTER TABLE pokemon ALTER COLUMN generation SET NOT NULL")
-		return err
+		return errors.WithStack(err)
 	}
 
 	down := func(db orm.DB) error {
@@ -44,7 +45,7 @@ func init() {
 				DROP COLUMN sun_location,
 				DROP COLUMN moon_location
 		`)
-		return err
+		return errors.WithStack(err)
 	}
 
 	opts := migrations.MigrationOptions{}

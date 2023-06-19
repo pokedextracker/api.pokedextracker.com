@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/pkg/errors"
 	"github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
@@ -17,18 +18,18 @@ func init() {
 				date_modified TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 			)
 		`); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec("ALTER TABLE users ADD CONSTRAINT users_username_unique UNIQUE (username)"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		_, err := db.Exec("CREATE INDEX users_username_index ON users (username)")
-		return err
+		return errors.WithStack(err)
 	}
 
 	down := func(db orm.DB) error {
 		_, err := db.Exec("DROP TABLE users")
-		return err
+		return errors.WithStack(err)
 	}
 
 	opts := migrations.MigrationOptions{}

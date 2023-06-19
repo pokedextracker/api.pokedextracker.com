@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/pkg/errors"
 	"github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
@@ -15,7 +16,7 @@ func init() {
 				DROP COLUMN icon_url,
 				DROP COLUMN avatar_url
 		`); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		_, err := db.Exec(`
 			ALTER TABLE pokemon
@@ -24,7 +25,7 @@ func init() {
 				ALTER COLUMN or_location DROP NOT NULL,
 				ALTER COLUMN as_location DROP NOT NULL
 		`)
-		return err
+		return errors.WithStack(err)
 	}
 
 	down := func(db orm.DB) error {
@@ -36,7 +37,7 @@ func init() {
 				ADD COLUMN icon_url VARCHAR(255),
 				ADD COLUMN avatar_url VARCHAR(255)
 		`); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		_, err := db.Exec(`
 			ALTER TABLE pokemon
@@ -45,7 +46,7 @@ func init() {
 				ALTER COLUMN or_location SET NOT NULL,
 				ALTER COLUMN as_location SET NOT NULL
 		`)
-		return err
+		return errors.WithStack(err)
 	}
 
 	opts := migrations.MigrationOptions{}

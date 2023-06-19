@@ -2,19 +2,20 @@ package main
 
 import (
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/pkg/errors"
 	"github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
 func init() {
 	up := func(db orm.DB) error {
 		if _, err := db.Exec("ALTER TABLE pokemon ADD COLUMN game_family_id TEXT"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec("ALTER TABLE pokemon ADD CONSTRAINT pokemon_game_family_id_foreign FOREIGN KEY (game_family_id) REFERENCES game_families (id)"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec("CREATE INDEX pokemon_game_family_id_index ON pokemon (game_family_id)"); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if _, err := db.Exec(`
 			UPDATE pokemon
@@ -34,15 +35,15 @@ func init() {
 				pokemon.generation = gf.generation
 
 		`); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		_, err := db.Exec("ALTER TABLE pokemon ALTER COLUMN game_family_id SET NOT NULL")
-		return err
+		return errors.WithStack(err)
 	}
 
 	down := func(db orm.DB) error {
 		_, err := db.Exec("ALTER TABLE pokemon DROP COLUMN game_family_id")
-		return err
+		return errors.WithStack(err)
 	}
 
 	opts := migrations.MigrationOptions{}

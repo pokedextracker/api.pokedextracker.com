@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/pkg/errors"
 	"github.com/robinjoseph08/go-pg-migrations/v3"
 )
 
@@ -12,7 +13,7 @@ func init() {
 				ALTER COLUMN generation DROP NOT NULL,
 				ALTER COLUMN region DROP NOT NULL
 		`)
-		return err
+		return errors.WithStack(err)
 	}
 
 	down := func(db orm.DB) error {
@@ -21,7 +22,7 @@ func init() {
 				ALTER COLUMN generation SET NOT NULL,
 				ALTER COLUMN region SET NOT NULL
 		`)
-		return err
+		return errors.WithStack(err)
 	}
 
 	opts := migrations.MigrationOptions{}
