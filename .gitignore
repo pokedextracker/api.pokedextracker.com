@@ -108,3 +108,5 @@ tags
 
 .env*
 .idea
+bin
+tmp
