@@ -124,6 +124,13 @@ start\:api: $(BIN_DIR)/air
 	DATABASE_DEBUG=${DATABASE_DEBUG} DATABASE_PORT=${DATABASE_PORT} LOG_LEVEL=${LOG_LEVEL} TZ=UTC $(BIN_DIR)/air | sed $$'s/^/\x1B[34mapi         | \x1B[0m/'
 
 .PHONY: test
-test:
+test: db\:migrate\:test
 	@echo "---> Testing"
+	# You'll need to start:deps in a separate session so that the database is running since some of the tests depend on
+	# it. If this is a fresh clone/database, you'll need to make sure you create the database with make test:setup.
 	DATABASE_PORT=${DATABASE_PORT} ENVIRONMENT=test TZ=UTC go test -race $(TEST_FILES) -coverprofile $(COVERAGE_PROFILE) $(TEST_FLAGS)
+
+.PHONY: test\:setup
+test\:setup:
+	@echo "---> Setting up test environment"
+	createdb -h localhost -p $(DATABASE_PORT) -U $(DATABASE_USER) $(TEST_DATABASE_NAME)
