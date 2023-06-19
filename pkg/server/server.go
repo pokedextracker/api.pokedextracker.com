@@ -11,6 +11,7 @@ import (
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/binder"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/config"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/errcodes"
+	"github.com/pokedextracker/api.pokedextracker.com/pkg/games"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/users"
 	"github.com/robinjoseph08/golib/echo/v4/health"
 	"github.com/robinjoseph08/golib/echo/v4/middleware/logger"
@@ -33,6 +34,7 @@ func New(cfg *config.Config, db *pg.DB) (*http.Server, error) {
 
 	health.RegisterRoutes(e)
 
+	games.RegisterRoutes(e, db)
 	users.RegisterRoutes(e, db)
 
 	echo.NotFoundHandler = notFoundHandler
