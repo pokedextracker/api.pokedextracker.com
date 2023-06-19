@@ -64,3 +64,51 @@ func Unauthorized() error {
 		"unauthorized",
 	}
 }
+
+func UnsupportedMediaType() error {
+	return &Error{
+		http.StatusUnsupportedMediaType,
+		"Unsupported Media Type",
+		"unsupported_media_type",
+	}
+}
+
+func UnknownParameter(param string) error {
+	return &Error{
+		http.StatusUnprocessableEntity,
+		fmt.Sprintf("Unknown Parameter %q", param),
+		"unknown_parameter",
+	}
+}
+
+func ValidationTypeError(msg string) error {
+	return &Error{
+		http.StatusUnprocessableEntity,
+		msg,
+		"validation_type_error",
+	}
+}
+
+func ValidationError(msg string) error {
+	return &Error{
+		http.StatusUnprocessableEntity,
+		msg,
+		"validation_error",
+	}
+}
+
+func MalformedPayload() error {
+	return &Error{
+		http.StatusBadRequest,
+		"Malformed Payload",
+		"malformed_payload",
+	}
+}
+
+func EmptyRequestBody() error {
+	return &Error{
+		http.StatusBadRequest,
+		"Request body can't be empty.",
+		"empty_request_body",
+	}
+}

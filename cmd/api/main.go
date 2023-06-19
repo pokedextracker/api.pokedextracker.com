@@ -28,7 +28,10 @@ func main() {
 		log.Err(err).Fatal("database error")
 	}
 
-	srv := server.New(cfg, db)
+	srv, err := server.New(cfg, db)
+	if err != nil {
+		log.Err(err).Fatal("server error")
+	}
 
 	graceful := signals.Setup()
 
