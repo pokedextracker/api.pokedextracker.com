@@ -38,21 +38,21 @@ clean:
 .PHONY: db\:migrate
 db\:migrate:
 	@echo "---> Migrating"
-	go run cmd/migrations/*.go migrate
+	DATABASE_PORT=${DATABASE_PORT} go run cmd/migrations/*.go migrate
 
 .PHONY: db\:migrate\:create
 db\:migrate\:create:
 	@echo "---> Creating new migration"
-	go run cmd/migrations/*.go create $(name)
+	DATABASE_PORT=${DATABASE_PORT} go run cmd/migrations/*.go create $(name)
 
 .PHONY: db\:migrate\:test
 db\:migrate\:test:
-	ENVIRONMENT=test $(MAKE) db:migrate
+	DATABASE_PORT=${DATABASE_PORT} ENVIRONMENT=test $(MAKE) db:migrate
 
 .PHONY: db\:rollback
 db\:rollback:
 	@echo "---> Rolling back"
-	go run cmd/migrations/*.go rollback
+	DATABASE_PORT=${DATABASE_PORT} go run cmd/migrations/*.go rollback
 
 .PHONY: deploy
 deploy:
@@ -126,4 +126,4 @@ start\:api: $(BIN_DIR)/air
 .PHONY: test
 test:
 	@echo "---> Testing"
-	TZ=UTC ENVIRONMENT=test go test -race $(TEST_FILES) -coverprofile $(COVERAGE_PROFILE) $(TEST_FLAGS)
+	DATABASE_PORT=${DATABASE_PORT} ENVIRONMENT=test TZ=UTC go test -race $(TEST_FILES) -coverprofile $(COVERAGE_PROFILE) $(TEST_FLAGS)
