@@ -11,6 +11,7 @@ import (
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/binder"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/config"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/errcodes"
+	"github.com/pokedextracker/api.pokedextracker.com/pkg/users"
 	"github.com/robinjoseph08/golib/echo/v4/health"
 	"github.com/robinjoseph08/golib/echo/v4/middleware/logger"
 	"github.com/robinjoseph08/golib/echo/v4/middleware/recovery"
@@ -31,6 +32,8 @@ func New(cfg *config.Config, db *pg.DB) (*http.Server, error) {
 	e.Use(recovery.Middleware())
 
 	health.RegisterRoutes(e)
+
+	users.RegisterRoutes(e, db)
 
 	echo.NotFoundHandler = notFoundHandler
 	e.HTTPErrorHandler = errcodes.NewHandler().Handle
