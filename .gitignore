@@ -111,3 +111,4 @@ tags
 bin
 tmp
 *.out
+cmd/scratch
