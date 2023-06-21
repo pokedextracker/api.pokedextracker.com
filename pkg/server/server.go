@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/binder"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/config"
+	"github.com/pokedextracker/api.pokedextracker.com/pkg/dexes"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/dextypes"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/errcodes"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/games"
@@ -35,6 +36,7 @@ func New(cfg *config.Config, db *pg.DB) (*http.Server, error) {
 
 	health.RegisterRoutes(e)
 
+	dexes.RegisterRoutes(e, db)
 	dextypes.RegisterRoutes(e, db)
 	games.RegisterRoutes(e, db)
 	users.RegisterRoutes(e, db)
