@@ -11,7 +11,7 @@ TEST_DATABASE_NAME ?= pokedex_tracker_test
 DEVELOPMENT_DATABASE_NAME ?= pokedex_tracker
 DATABASE_PORT ?= 9876
 
-DATABASE_DEBUG ?= false
+DATABASE_DEBUG ?= true
 LOG_LEVEL ?= info
 
 TEST_FILES ?= ./pkg/...

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/go-pg/pg/v10"
+	"github.com/go-pg/pg/v10/orm"
 	"github.com/pkg/errors"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/errcodes"
 )
@@ -11,6 +12,8 @@ import (
 type RetrieveDexOptions struct {
 	Slug     *string
 	Username *string
+
+	IncludeDexTypePokemon bool
 }
 
 type Service struct {
@@ -40,6 +43,13 @@ func (svc *Service) RetrieveDex(ctx context.Context, opts RetrieveDexOptions) (*
 		q = q.
 			Join("INNER JOIN users u ON u.id = d.user_id").
 			Where("u.username = ?", *opts.Username)
+	}
+	if opts.IncludeDexTypePokemon {
+		q = q.
+			Relation("DexType.Pokemon", func(sq *orm.Query) (*orm.Query, error) {
+				return sq.Order("order ASC"), nil
+			}).
+			Relation("DexType.Pokemon.GameFamily")
 	}
 
 	err := q.Select()

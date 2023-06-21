@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/pkg/errors"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/binder"
+	"github.com/pokedextracker/api.pokedextracker.com/pkg/captures"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/config"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/dexes"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/dextypes"
@@ -36,6 +37,7 @@ func New(cfg *config.Config, db *pg.DB) (*http.Server, error) {
 
 	health.RegisterRoutes(e)
 
+	captures.RegisterRoutes(e, db)
 	dexes.RegisterRoutes(e, db)
 	dextypes.RegisterRoutes(e, db)
 	games.RegisterRoutes(e, db)
