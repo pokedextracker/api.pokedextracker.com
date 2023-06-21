@@ -13,5 +13,6 @@ func RegisterRoutes(e *echo.Echo, db *pg.DB) {
 		userService: userService,
 	}
 
+	e.GET("/users/:username", h.retrieve)
 	e.GET("/users", h.list)
 }

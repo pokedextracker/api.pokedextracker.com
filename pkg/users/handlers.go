@@ -11,6 +11,21 @@ type handler struct {
 	userService *Service
 }
 
+func (h *handler) retrieve(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	username := c.Param("username")
+
+	user, err := h.userService.RetrieveUser(ctx, RetrieveUserOptions{
+		Username: &username,
+	})
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return errors.WithStack(c.JSON(http.StatusOK, user))
+}
+
 func (h *handler) list(c echo.Context) error {
 	ctx := c.Request().Context()
 
