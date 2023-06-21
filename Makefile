@@ -98,9 +98,9 @@ $(BIN_DIR)/golangci-lint:
 	@echo "--> Installing linter"
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(BIN_DIR) v1.53.3
 
-$(BIN_DIR)/air:
+$(BIN_DIR)/gin:
 	@echo "--> Installing live reloader"
-	curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(BIN_DIR) v1.44.0
+	GOBIN=$$(pwd)/$(BIN_DIR) go install github.com/codegangsta/gin@latest
 
 .PHONY: start
 start:
@@ -117,11 +117,11 @@ start\:deps:
 	COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose up --build --remove-orphans
 
 .PHONY: start\:api
-start\:api: $(BIN_DIR)/air
+start\:api: $(BIN_DIR)/gin
 	@echo "---> Starting API"
 	test -f .env && . .env || echo "----> No .env found"
 	while ! nc -z localhost $(DATABASE_PORT); do sleep 0.1; done
-	DATABASE_DEBUG=${DATABASE_DEBUG} DATABASE_PORT=${DATABASE_PORT} LOG_LEVEL=${LOG_LEVEL} TZ=UTC $(BIN_DIR)/air | sed $$'s/^/\x1B[34mapi         | \x1B[0m/'
+	DATABASE_DEBUG=${DATABASE_DEBUG} DATABASE_PORT=${DATABASE_PORT} LOG_LEVEL=${LOG_LEVEL} TZ=UTC $(BIN_DIR)/gin --excludeDir tmp --excludeDir scripts --port 8647 --appPort 8648 --path . --build ./cmd/api --immediate --bin $(BIN_DIR)/gin-api run | sed $$'s/^/\x1B[34mapi         | \x1B[0m/'
 
 .PHONY: test
 test: db\:migrate\:test
