@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-pg/pg/v10"
 	"github.com/pkg/errors"
-	"github.com/pokedextracker/api.pokedextracker.com/pkg/database"
 )
 
 type ListCapturesOptions struct {
@@ -24,7 +23,6 @@ func NewService(db *pg.DB) *Service {
 
 func (svc *Service) ListCaptures(ctx context.Context, opts ListCapturesOptions) ([]*Capture, error) {
 	captures := make([]*Capture, 0)
-	ctx = database.WithLogging(ctx, true)
 
 	q := svc.db.
 		ModelContext(ctx, &captures).

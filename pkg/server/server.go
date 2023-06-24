@@ -15,6 +15,7 @@ import (
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/dextypes"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/errcodes"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/games"
+	"github.com/pokedextracker/api.pokedextracker.com/pkg/pokemon"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/users"
 	"github.com/robinjoseph08/golib/echo/v4/health"
 	"github.com/robinjoseph08/golib/echo/v4/middleware/logger"
@@ -41,6 +42,7 @@ func New(cfg *config.Config, db *pg.DB) (*http.Server, error) {
 	dexes.RegisterRoutes(e, db)
 	dextypes.RegisterRoutes(e, db)
 	games.RegisterRoutes(e, db)
+	pokemon.RegisterRoutes(e, db)
 	users.RegisterRoutes(e, db)
 
 	echo.NotFoundHandler = notFoundHandler

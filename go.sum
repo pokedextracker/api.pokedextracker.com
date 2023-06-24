@@ -124,8 +124,8 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=
 github.com/robinjoseph08/go-pg-migrations/v3 v3.0.0 h1:0/H63lDsoNYVn5YmP6VLDEnnKkoVYiHx7udTWCK4BUI=
 github.com/robinjoseph08/go-pg-migrations/v3 v3.0.0/go.mod h1:nOkSFfwwDUBFnDDQqMRC2p4PDE7GZb/KSVqILVB3bmw=
-github.com/robinjoseph08/golib v0.1.0 h1:hy48yWl7KqgrQXMCK/LqE2lwVOpdpys9QsVS8hqbPb8=
-github.com/robinjoseph08/golib v0.1.0/go.mod h1:4igWuz+AzFHszJdlLeh0prE+dWrDSXIDYUzoY4usPcI=
+github.com/robinjoseph08/golib v0.1.1 h1:2abkLysQ+y72o2m6HG5CB+zY4UI0tUA9QMp/dO5NUlA=
+github.com/robinjoseph08/golib v0.1.1/go.mod h1:4igWuz+AzFHszJdlLeh0prE+dWrDSXIDYUzoY4usPcI=
 github.com/rs/xid v1.4.0/go.mod h1:trrq9SKmegXys3aeAKXMUTdJsYXVwGY3RLcfgqegfbg=
 github.com/rs/zerolog v1.29.1 h1:cO+d60CHkknCbvzEWxP0S9K6KqyTjrCNUy1LdQLCGPc=
 github.com/rs/zerolog v1.29.1/go.mod h1:Le6ESbR7hc+DP6Lt1THiV8CQSdkkNrd3R0XbEgp3ZBU=

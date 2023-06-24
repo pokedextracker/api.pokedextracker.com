@@ -52,17 +52,8 @@ func (h *handler) list(c echo.Context) error {
 		captures = append(captures, &Capture{
 			DexID:     dex.ID,
 			PokemonID: pokemon.ID,
-			Pokemon: &Pokemon{
-				ID:           pokemon.ID,
-				NationalID:   pokemon.NationalID,
-				Name:         pokemon.Name,
-				GameFamilyID: pokemon.GameFamilyID,
-				GameFamily:   pokemon.GameFamily,
-				Form:         pokemon.Form,
-				Box:          pokemon.Box,
-				DexNumber:    pokemon.DexNumber,
-			},
-			Captured: false,
+			Pokemon:   pokemon,
+			Captured:  false,
 		})
 	}
 

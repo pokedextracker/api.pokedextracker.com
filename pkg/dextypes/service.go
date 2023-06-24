@@ -5,7 +5,13 @@ import (
 
 	"github.com/go-pg/pg/v10"
 	"github.com/pkg/errors"
+	"github.com/pokedextracker/api.pokedextracker.com/pkg/errcodes"
 )
+
+type RetrieveDexTypeOptions struct {
+	ID                *int
+	IncludeGameFamily bool
+}
 
 type Service struct {
 	db *pg.DB
@@ -13,6 +19,29 @@ type Service struct {
 
 func NewService(db *pg.DB) *Service {
 	return &Service{db}
+}
+
+func (svc *Service) RetrieveDexType(ctx context.Context, opts RetrieveDexTypeOptions) (*DexType, error) {
+	dexType := &DexType{}
+
+	q := svc.db.ModelContext(ctx, dexType)
+
+	if opts.ID != nil {
+		q = q.Where("dt.id = ?", *opts.ID)
+	}
+	if opts.IncludeGameFamily {
+		q = q.Relation("GameFamily")
+	}
+
+	err := q.Select()
+	if err != nil {
+		if errors.Is(err, pg.ErrNoRows) {
+			return nil, errcodes.NotFound("Dex type")
+		}
+		return nil, errors.WithStack(err)
+	}
+
+	return dexType, nil
 }
 
 func (svc *Service) ListDexTypes(ctx context.Context) ([]*DexType, error) {
