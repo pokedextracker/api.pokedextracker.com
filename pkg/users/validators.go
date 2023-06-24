@@ -15,3 +15,8 @@ type listParams struct {
 	Limit  int `query:"limit" json:"limit" default:"10" validate:"min=0,max=100"`
 	Offset int `query:"offset" json:"offset" validate:"min=0"`
 }
+
+type loginParams struct {
+	Username string `json:"username" mod:"trim" validate:"required,token"`
+	Password string `json:"password" validate:"required"`
+}

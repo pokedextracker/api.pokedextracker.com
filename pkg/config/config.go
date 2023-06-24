@@ -22,8 +22,9 @@ type Config struct {
 	DatabaseSSLMode           string
 	DatabaseUser              string
 	Environment               string
+	FrontendURL               string
 	Hostname                  string
-	JWTSecret                 string
+	JWTSecret                 []byte
 	Port                      int
 	Version                   string
 }
@@ -53,7 +54,7 @@ func New() (*Config, error) {
 		DatabasePort:              databasePort,
 		DatabaseSSLHost:           os.Getenv("DATABASE_SSL_HOST"),
 		Hostname:                  hostname,
-		JWTSecret:                 os.Getenv("JWT_SECRET"),
+		JWTSecret:                 []byte(os.Getenv("JWT_SECRET")),
 		Port:                      8647,
 		Version:                   os.Getenv("VERSION"),
 	}

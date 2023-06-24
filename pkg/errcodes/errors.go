@@ -41,7 +41,7 @@ func (err *Error) Is(target error) bool {
 func Forbidden(action string) error {
 	return &Error{
 		http.StatusForbidden,
-		fmt.Sprintf("%s is not allowed.", action),
+		fmt.Sprintf("%s is not allowed", action),
 		"forbidden",
 	}
 }
@@ -50,7 +50,7 @@ func Forbidden(action string) error {
 func NotFound(resource string) error {
 	return &Error{
 		http.StatusNotFound,
-		fmt.Sprintf("%s not found.", resource),
+		fmt.Sprintf("%s not found", resource),
 		"not_found",
 	}
 }
@@ -110,5 +110,13 @@ func EmptyRequestBody() error {
 		http.StatusBadRequest,
 		"Request body can't be empty.",
 		"empty_request_body",
+	}
+}
+
+func InvalidPassword() error {
+	return &Error{
+		http.StatusUnprocessableEntity,
+		"password is invalid",
+		"invalid_password",
 	}
 }

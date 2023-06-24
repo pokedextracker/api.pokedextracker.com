@@ -22,6 +22,7 @@ const (
 	ne       = "ne"
 	oneof    = "oneof"
 	required = "required"
+	token    = "token"
 )
 
 var (
@@ -97,6 +98,8 @@ func formatValidationError(err validator.FieldError) string {
 		return fmt.Sprintf("%q must be one of the following: %s", field, strings.Join(valids, ", "))
 	case required:
 		return fmt.Sprintf("%q is required", field)
+	case token:
+		return fmt.Sprintf("%q must only contain alpha-numeric and underscore characters", field)
 	default:
 		// these print statements aid in determining how to construct
 		// the error messages for validation functions that haven't been

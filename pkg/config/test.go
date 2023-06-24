@@ -15,6 +15,7 @@ func loadTestConfig(cfg *Config) {
 	cfg.DatabaseSSLMode = "disable"
 	cfg.DatabaseUser = "pokedex_tracker_admin"
 	cfg.Environment = "test"
-	cfg.JWTSecret = "s3cret"
+	cfg.FrontendURL = "http://localhost:9898"
+	cfg.JWTSecret = []byte("s3cret")
 	cfg.Version = "test"
 }

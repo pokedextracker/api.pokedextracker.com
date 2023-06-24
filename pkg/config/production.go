@@ -11,4 +11,5 @@ func loadProductionConfig(cfg *Config) {
 	cfg.DatabaseSSLMode = os.Getenv("DATABASE_SSL_MODE")
 	cfg.DatabaseUser = os.Getenv("DATABASE_USER")
 	cfg.Environment = "production"
+	cfg.FrontendURL = "https://pokedextracker.com"
 }

@@ -47,6 +47,7 @@ func New() (*Binder, error) {
 		}
 		return name
 	})
+	_ = validate.RegisterValidation("token", tokenValidator)
 
 	return &Binder{queryDecoder, formDecoder, conform, validate}, nil
 }

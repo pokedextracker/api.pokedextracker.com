@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-pg/pg/v10"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/pkg/errors"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/binder"
@@ -35,6 +36,9 @@ func New(cfg *config.Config, db *pg.DB) (*http.Server, error) {
 
 	e.Use(logger.Middleware())
 	e.Use(recovery.Middleware())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{cfg.FrontendURL},
+	}))
 
 	health.RegisterRoutes(e)
 
@@ -43,7 +47,7 @@ func New(cfg *config.Config, db *pg.DB) (*http.Server, error) {
 	dextypes.RegisterRoutes(e, db)
 	games.RegisterRoutes(e, db)
 	pokemon.RegisterRoutes(e, db)
-	users.RegisterRoutes(e, db)
+	users.RegisterRoutes(e, cfg, db)
 
 	echo.NotFoundHandler = notFoundHandler
 	e.HTTPErrorHandler = errcodes.NewHandler().Handle
