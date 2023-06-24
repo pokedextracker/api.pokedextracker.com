@@ -10,8 +10,7 @@ import (
 )
 
 type RetrieveUserOptions struct {
-	Username     *string
-	IncludeDexes bool
+	Username *string
 }
 
 type ListUsersOptions struct {
@@ -33,23 +32,20 @@ func (svc *Service) RetrieveUser(ctx context.Context, opts RetrieveUserOptions) 
 	q := svc.db.
 		ModelContext(ctx, user).
 		Column("u.*").
-		ColumnExpr("u.stripe_id IS NOT NULL AS donated")
+		ColumnExpr("u.stripe_id IS NOT NULL AS donated").
+		Relation("Dexes", func(q *orm.Query) (*orm.Query, error) {
+			return q.
+				Column("d.*").
+				ColumnExpr("(SELECT COUNT(*) FROM captures WHERE dex_id = d.id) AS caught").
+				ColumnExpr("(SELECT COUNT(*) FROM dex_types_pokemon WHERE dex_type_id = d.dex_type_id) AS total").
+				Order("d.date_created ASC"), nil
+		}).
+		Relation("Dexes.DexType").
+		Relation("Dexes.Game").
+		Relation("Dexes.Game.GameFamily")
 
 	if opts.Username != nil {
 		q = q.Where("u.username = ?", *opts.Username)
-	}
-	if opts.IncludeDexes {
-		q = q.
-			Relation("Dexes", func(q *orm.Query) (*orm.Query, error) {
-				return q.
-					Column("d.*").
-					ColumnExpr("(SELECT COUNT(*) FROM captures WHERE dex_id = d.id) AS caught").
-					ColumnExpr("(SELECT COUNT(*) FROM dex_types_pokemon WHERE dex_type_id = d.dex_type_id) AS total").
-					Order("d.date_created ASC"), nil
-			}).
-			Relation("Dexes.DexType").
-			Relation("Dexes.Game").
-			Relation("Dexes.Game.GameFamily")
 	}
 
 	err := q.Select()

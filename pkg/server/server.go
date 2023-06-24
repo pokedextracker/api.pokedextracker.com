@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/pkg/errors"
+	"github.com/pokedextracker/api.pokedextracker.com/pkg/auth"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/binder"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/captures"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/config"
@@ -41,13 +42,14 @@ func New(cfg *config.Config, db *pg.DB) (*http.Server, error) {
 	}))
 
 	health.RegisterRoutes(e)
+	auth.RegisterRoutes(e, cfg, db)
 
 	captures.RegisterRoutes(e, db)
 	dexes.RegisterRoutes(e, db)
 	dextypes.RegisterRoutes(e, db)
 	games.RegisterRoutes(e, db)
 	pokemon.RegisterRoutes(e, db)
-	users.RegisterRoutes(e, cfg, db)
+	users.RegisterRoutes(e, db)
 
 	echo.NotFoundHandler = notFoundHandler
 	e.HTTPErrorHandler = errcodes.NewHandler().Handle
