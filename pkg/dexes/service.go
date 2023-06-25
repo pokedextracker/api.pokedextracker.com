@@ -98,7 +98,7 @@ func (svc *Service) UpdateDex(ctx context.Context, dex *Dex, opts UpdateDexOptio
 		if opts.UpdatingDexType {
 			// We're changing dex types, so we need to delete any captures that are part of the old dex type, but are
 			// not in the new one.
-			_, err := tx.Exec(`
+			_, err := tx.ExecContext(ctx, `
 DELETE FROM captures WHERE pokemon_id IN (
 	SELECT pokemon_id FROM dex_types_pokemon WHERE pokemon_id NOT IN (
 		SELECT pokemon_id FROM dex_types_pokemon WHERE dex_type_id = ?
@@ -113,7 +113,7 @@ DELETE FROM captures WHERE pokemon_id IN (
 		}
 
 		_, err := tx.
-			Model(dex).
+			ModelContext(ctx, dex).
 			Column(columns...).
 			WherePK().
 			Update()

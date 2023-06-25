@@ -52,7 +52,7 @@ func New(cfg *config.Config, db *pg.DB) (*http.Server, error) {
 	dextypes.RegisterRoutes(e, db, nonEnforcedAuth)
 	games.RegisterRoutes(e, db, nonEnforcedAuth)
 	pokemon.RegisterRoutes(e, db, nonEnforcedAuth)
-	users.RegisterRoutes(e, db, enforcedAuth, nonEnforcedAuth)
+	users.RegisterRoutes(e, cfg, db, enforcedAuth, nonEnforcedAuth)
 
 	echo.NotFoundHandler = notFoundHandler
 	e.HTTPErrorHandler = errcodes.NewHandler().Handle

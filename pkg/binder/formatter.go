@@ -22,7 +22,10 @@ const (
 	ne       = "ne"
 	oneof    = "oneof"
 	required = "required"
-	token    = "token"
+
+	friendCode3DS    = "friend_code_3ds"
+	friendCodeSwitch = "friend_code_switch"
+	token            = "token"
 )
 
 var (
@@ -98,6 +101,10 @@ func formatValidationError(err validator.FieldError) string {
 		return fmt.Sprintf("%q must be one of the following: %s", field, strings.Join(valids, ", "))
 	case required:
 		return fmt.Sprintf("%q is required", field)
+	case friendCode3DS:
+		return fmt.Sprintf("%q must be a valid 3DS friend code", field)
+	case friendCodeSwitch:
+		return fmt.Sprintf("%q must be a valid Switch friend code", field)
 	case token:
 		return fmt.Sprintf("%q must only contain alpha-numeric and underscore characters", field)
 	default:

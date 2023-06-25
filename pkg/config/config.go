@@ -11,6 +11,7 @@ import (
 // Config contains the environment specific configuration values needed by the
 // application.
 type Config struct {
+	BcryptCost                int
 	DatabaseConnectRetryCount int
 	DatabaseConnectRetryDelay time.Duration
 	DatabaseDebug             bool
@@ -48,6 +49,7 @@ func New() (*Config, error) {
 	}
 
 	cfg := &Config{
+		BcryptCost:                10,
 		DatabaseConnectRetryCount: 10,
 		DatabaseConnectRetryDelay: 2 * time.Second,
 		DatabaseDebug:             os.Getenv("DATABASE_DEBUG") == "true",

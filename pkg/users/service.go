@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+	"time"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
@@ -16,6 +17,10 @@ type RetrieveUserOptions struct {
 type ListUsersOptions struct {
 	Limit  *int
 	Offset *int
+}
+
+type UpdateUserOptions struct {
+	Columns []string
 }
 
 type Service struct {
@@ -91,4 +96,28 @@ func (svc *Service) ListUsers(ctx context.Context, opts ListUsersOptions) ([]*Us
 	}
 
 	return users, nil
+}
+
+func (svc *Service) UpdateUser(ctx context.Context, user *User, opts UpdateUserOptions) error {
+	if len(opts.Columns) == 0 {
+		// We're not updating anything, so just return early.
+		return nil
+	}
+
+	columns := append(opts.Columns, "date_modified")
+	user.DateModified = time.Now()
+
+	_, err := svc.db.
+		ModelContext(ctx, user).
+		Column(columns...).
+		WherePK().
+		Update()
+	if err != nil {
+		if errors.Is(err, pg.ErrNoRows) {
+			return errcodes.NotFound("user")
+		}
+		return errors.WithStack(err)
+	}
+
+	return nil
 }

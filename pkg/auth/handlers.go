@@ -14,7 +14,7 @@ import (
 )
 
 type handler struct {
-	sessionService *Service
+	authService *Service
 }
 
 func (h *handler) create(c echo.Context) error {
@@ -25,7 +25,7 @@ func (h *handler) create(c echo.Context) error {
 		return errors.WithStack(err)
 	}
 
-	session, err := h.sessionService.RetrieveSession(ctx, RetrieveSessionOptions{
+	session, err := h.authService.RetrieveSession(ctx, RetrieveSessionOptions{
 		Username: &params.Username,
 	})
 	if err != nil {
@@ -59,12 +59,12 @@ func (h *handler) create(c echo.Context) error {
 		session.LastIP = &ip
 		options.Columns = append(options.Columns, "last_ip")
 	}
-	err = h.sessionService.UpdateSession(ctx, session, options)
+	err = h.authService.UpdateSession(ctx, session, options)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	token, err := h.sessionService.SignSession(ctx, session)
+	token, err := h.authService.SignSession(ctx, session)
 	if err != nil {
 		return errors.WithStack(err)
 	}

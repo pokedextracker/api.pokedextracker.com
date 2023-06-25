@@ -47,7 +47,9 @@ func New() (*Binder, error) {
 		}
 		return name
 	})
-	_ = validate.RegisterValidation("token", tokenValidator)
+	_ = validate.RegisterValidation(friendCode3DS, friendCode3DSValidator)
+	_ = validate.RegisterValidation(friendCodeSwitch, friendCodeSwitchValidator)
+	_ = validate.RegisterValidation(token, tokenValidator)
 
 	return &Binder{queryDecoder, formDecoder, conform, validate}, nil
 }

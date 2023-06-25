@@ -11,7 +11,7 @@ func RegisterRoutes(e *echo.Echo, cfg *config.Config, db *pg.DB, nonEnforceAuth 
 	sessionService := NewService(cfg, db)
 
 	h := &handler{
-		sessionService: sessionService,
+		authService: sessionService,
 	}
 
 	e.POST("/sessions", h.create, nonEnforceAuth)
