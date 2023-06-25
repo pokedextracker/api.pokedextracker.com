@@ -24,7 +24,7 @@ type logQueryHook struct {
 	log logger.Logger
 }
 
-func (logQueryHook) BeforeQuery(ctx context.Context, event *pg.QueryEvent) (context.Context, error) {
+func (logQueryHook) BeforeQuery(ctx context.Context, _ *pg.QueryEvent) (context.Context, error) {
 	return ctx, nil
 }
 

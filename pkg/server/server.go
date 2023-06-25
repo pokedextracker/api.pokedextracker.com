@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/labstack/echo/v4"
@@ -57,8 +58,9 @@ func New(cfg *config.Config, db *pg.DB) (*http.Server, error) {
 	e.HTTPErrorHandler = errcodes.NewHandler().Handle
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", cfg.Port),
-		Handler: e,
+		Addr:              fmt.Sprintf(":%d", cfg.Port),
+		Handler:           e,
+		ReadHeaderTimeout: 2 * time.Second,
 	}
 
 	return srv, nil

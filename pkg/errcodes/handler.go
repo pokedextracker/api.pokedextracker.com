@@ -37,7 +37,7 @@ func (h *Handler) Handle(err error, c echo.Context) {
 	}
 }
 
-func (h *Handler) generatePayload(c echo.Context, err error) (int, map[string]interface{}) {
+func (h *Handler) generatePayload(_ echo.Context, err error) (int, map[string]interface{}) {
 	code := ""
 	msg := ""
 	httpCode := http.StatusInternalServerError

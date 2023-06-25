@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"math/rand"
 	"net/http"
-	"time"
 
 	"github.com/pkg/errors"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/config"
@@ -15,8 +13,6 @@ import (
 )
 
 func main() {
-	rand.Seed(time.Now().UTC().UnixNano())
-
 	log := logger.New()
 
 	cfg, err := config.New()

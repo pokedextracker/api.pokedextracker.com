@@ -65,7 +65,7 @@ func (svc *Service) UpdateSession(ctx context.Context, session *Session, opts Up
 	return errors.WithStack(err)
 }
 
-func (svc *Service) SignSession(ctx context.Context, session *Session) (string, error) {
+func (svc *Service) SignSession(_ context.Context, session *Session) (string, error) {
 	// We set values on the attached claims object.
 	session.RegisteredClaims.IssuedAt = jwt.NewNumericDate(time.Now())
 	session.RegisteredClaims.Issuer = "pokedextracker_api"
@@ -79,7 +79,7 @@ func (svc *Service) SignSession(ctx context.Context, session *Session) (string, 
 	return signed, nil
 }
 
-func (svc *Service) ParseToken(ctx context.Context, signed string) (*Session, error) {
+func (svc *Service) ParseToken(_ context.Context, signed string) (*Session, error) {
 	token, err := jwt.ParseWithClaims(signed, &Session{}, func(token *jwt.Token) (interface{}, error) {
 		return svc.config.JWTSecret, nil
 	})
