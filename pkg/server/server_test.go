@@ -37,5 +37,5 @@ func TestNew(t *testing.T) {
 	srv.Handler.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code, "incorrect status code")
-	assert.Contains(t, w.Body.String(), "Page not found.", "incorrect response")
+	assert.Contains(t, w.Body.String(), "page not found", "incorrect response")
 }

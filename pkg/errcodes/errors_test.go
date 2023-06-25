@@ -14,8 +14,8 @@ func TestErrors(t *testing.T) {
 		msg      string
 		code     string
 	}{
-		{Forbidden("Foo"), http.StatusForbidden, "Foo is not allowed.", "forbidden"},
-		{NotFound("Foo"), http.StatusNotFound, "Foo not found.", "not_found"},
+		{Forbidden("Foo"), http.StatusForbidden, "Foo is not allowed", "forbidden"},
+		{NotFound("Foo"), http.StatusNotFound, "Foo not found", "not_found"},
 	}
 
 	for _, tt := range cases {
