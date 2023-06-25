@@ -15,6 +15,11 @@ type ListCapturesOptions struct {
 	DexTypeID *int
 }
 
+type DeleteCapturesOptions struct {
+	DexID      int
+	PokemonIDs []int
+}
+
 type Service struct {
 	db *pg.DB
 }
@@ -25,6 +30,7 @@ func NewService(db *pg.DB) *Service {
 
 func (svc *Service) CreateCaptures(ctx context.Context, captures []*Capture) error {
 	if len(captures) == 0 {
+		// We're not inserting any captures, so we just return early.
 		return nil
 	}
 
@@ -71,4 +77,18 @@ func (svc *Service) ListCaptures(ctx context.Context, opts ListCapturesOptions) 
 	}
 
 	return captures, nil
+}
+
+func (svc *Service) DeleteCaptures(ctx context.Context, opts DeleteCapturesOptions) error {
+	if len(opts.PokemonIDs) == 0 {
+		// We're not deleting any captures, so we just return early.
+		return nil
+	}
+
+	_, err := svc.db.
+		ModelContext(ctx, (*Capture)(nil)).
+		Where("dex_id = ?", opts.DexID).
+		WhereIn("pokemon_id IN (?)", opts.PokemonIDs).
+		Delete()
+	return errors.WithStack(err)
 }

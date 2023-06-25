@@ -124,3 +124,36 @@ func (h *handler) list(c echo.Context) error {
 
 	return errors.WithStack(c.JSON(http.StatusOK, captures))
 }
+
+func (h *handler) delete(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	session := auth.FromContext(c)
+
+	params := deleteParams{}
+	if err := c.Bind(&params); err != nil {
+		return errors.WithStack(err)
+	}
+
+	dex, err := h.dexService.RetrieveDex(ctx, dexes.RetrieveDexOptions{
+		ID: &params.Dex,
+	})
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	// Validate that this user has permissions to delete captures for this dex.
+	if dex.UserID != session.ID {
+		return errcodes.Forbidden("deleting captures for this dex")
+	}
+
+	err = h.captureService.DeleteCaptures(ctx, DeleteCapturesOptions{
+		DexID:      params.Dex,
+		PokemonIDs: params.Pokemon,
+	})
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return errors.WithStack(c.JSONBlob(http.StatusOK, []byte(`{"deleted":true}`)))
+}
