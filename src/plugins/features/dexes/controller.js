@@ -28,7 +28,7 @@ exports.create = function (params, payload, auth) {
     }
 
     payload.user_id = auth.id;
-    payload.slug = Slug(payload.title, { lower: true });
+    payload.slug = payload.slug || Slug(payload.title, { lower: true });
 
     if (payload.slug === '') {
       throw new Errors.EmptySlug();
@@ -83,7 +83,7 @@ exports.update = function (params, payload, auth) {
   })
   .spread((dex, game, dexType) => {
     if (payload.title) {
-      payload.slug = Slug(payload.title, { lower: true });
+      payload.slug = payload.slug || Slug(payload.title, { lower: true });
 
       if (payload.slug === '') {
         throw new Errors.EmptySlug();
