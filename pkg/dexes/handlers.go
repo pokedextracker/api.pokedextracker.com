@@ -112,3 +112,33 @@ func (h *handler) retrieve(c echo.Context) error {
 
 	return errors.WithStack(c.JSON(http.StatusOK, dex))
 }
+
+func (h *handler) delete(c echo.Context) error {
+	ctx := c.Request().Context()
+	session := auth.FromContext(c)
+
+	username := c.Param("username")
+	slg := c.Param("slug")
+
+	if username != session.Username {
+		return errcodes.Forbidden("deleting a dex for this user")
+	}
+
+	dex, err := h.dexService.RetrieveDex(ctx, RetrieveDexOptions{
+		Username: &username,
+		Slug:     &slg,
+	})
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	err = h.dexService.DeleteDex(ctx, DeleteDexOptions{
+		ID:     dex.ID,
+		UserID: dex.UserID,
+	})
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return errors.WithStack(c.JSONBlob(http.StatusOK, []byte(`{"deleted":true}`)))
+}

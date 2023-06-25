@@ -17,6 +17,11 @@ type RetrieveDexOptions struct {
 	IncludeDexTypePokemon bool
 }
 
+type DeleteDexOptions struct {
+	ID     int
+	UserID int
+}
+
 type Service struct {
 	db *pg.DB
 }
@@ -72,4 +77,28 @@ func (svc *Service) RetrieveDex(ctx context.Context, opts RetrieveDexOptions) (*
 	}
 
 	return dex, nil
+}
+
+func (svc *Service) DeleteDex(ctx context.Context, opts DeleteDexOptions) error {
+	count, err := svc.db.
+		ModelContext(ctx, (*Dex)(nil)).
+		Where("d.user_id = ?", opts.UserID).
+		Count()
+
+	if count == 1 {
+		return errcodes.AtLeastOneDex()
+	}
+
+	_, err = svc.db.
+		ModelContext(ctx, (*Dex)(nil)).
+		Where("id = ?", opts.ID).
+		Delete()
+	if err != nil {
+		if errors.Is(err, pg.ErrNoRows) {
+			return errcodes.NotFound("dex")
+		}
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
