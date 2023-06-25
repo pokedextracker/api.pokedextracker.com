@@ -25,6 +25,13 @@ func NewService(db *pg.DB) *Service {
 	return &Service{db}
 }
 
+func (svc *Service) CreateDex(ctx context.Context, dex *Dex) error {
+	_, err := svc.db.
+		ModelContext(ctx, dex).
+		Insert()
+	return errors.WithStack(err)
+}
+
 func (svc *Service) RetrieveDex(ctx context.Context, opts RetrieveDexOptions) (*Dex, error) {
 	dex := &Dex{}
 

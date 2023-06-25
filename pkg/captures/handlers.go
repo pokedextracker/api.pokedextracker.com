@@ -19,7 +19,6 @@ type handler struct {
 
 func (h *handler) create(c echo.Context) error {
 	ctx := c.Request().Context()
-
 	session := auth.FromContext(c)
 
 	params := createParams{}
@@ -127,7 +126,6 @@ func (h *handler) list(c echo.Context) error {
 
 func (h *handler) delete(c echo.Context) error {
 	ctx := c.Request().Context()
-
 	session := auth.FromContext(c)
 
 	params := deleteParams{}

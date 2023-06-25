@@ -15,7 +15,7 @@ type Dex struct {
 	UserID       int               `json:"user_id"`
 	Title        string            `json:"title"`
 	Slug         string            `json:"slug"`
-	Shiny        bool              `json:"shiny"`
+	Shiny        bool              `pg:",use_zero" json:"shiny"`
 	GameID       string            `json:"-"`
 	Game         *games.Game       `pg:"g,rel:has-one" json:"game"`
 	DexTypeID    int               `json:"-"`

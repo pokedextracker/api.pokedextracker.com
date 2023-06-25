@@ -7,10 +7,10 @@ type GameFamily struct {
 	Generation      int    `json:"generation"`
 	RegionalTotal   int    `json:"regional_total"`
 	NationalTotal   int    `json:"national_total"`
-	RegionalSupport bool   `json:"regional_support"`
-	NationalSupport bool   `json:"national_support"`
+	RegionalSupport bool   `pg:",use_zero" json:"regional_support"`
+	NationalSupport bool   `pg:",use_zero" json:"national_support"`
 	Order           int    `json:"order"`
-	Published       bool   `json:"published"`
+	Published       bool   `pg:",use_zero" json:"published"`
 }
 
 type Game struct {
