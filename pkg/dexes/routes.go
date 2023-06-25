@@ -21,5 +21,6 @@ func RegisterRoutes(e *echo.Echo, db *pg.DB, enforceAuth echo.MiddlewareFunc, no
 
 	e.POST("/users/:username/dexes", h.create, enforceAuth)
 	e.GET("/users/:username/dexes/:slug", h.retrieve, nonEnforceAuth)
+	e.POST("/users/:username/dexes/:slug", h.update, enforceAuth)
 	e.DELETE("/users/:username/dexes/:slug", h.delete, enforceAuth)
 }

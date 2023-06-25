@@ -113,6 +113,105 @@ func (h *handler) retrieve(c echo.Context) error {
 	return errors.WithStack(c.JSON(http.StatusOK, dex))
 }
 
+func (h *handler) update(c echo.Context) error {
+	ctx := c.Request().Context()
+	session := auth.FromContext(c)
+
+	username := c.Param("username")
+	slg := c.Param("slug")
+
+	params := updateParams{}
+	if err := c.Bind(&params); err != nil {
+		return errors.WithStack(err)
+	}
+
+	// Validate that this user has permissions to update this dex.
+	if username != session.Username {
+		return errcodes.Forbidden("updating a dex for this user")
+	}
+
+	dex, err := h.dexService.RetrieveDex(ctx, RetrieveDexOptions{
+		Username: &username,
+		Slug:     &slg,
+	})
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	updatingGame := false
+	options := UpdateDexOptions{
+		Columns: []string{},
+	}
+
+	if params.Title != nil && *params.Title != dex.Title {
+		if params.Slug == nil {
+			return errcodes.ValidationError("slug needs to be provided when editing title")
+		}
+
+		dex.Title = *params.Title
+		options.Columns = append(options.Columns, "title")
+	}
+	if params.Slug != nil && *params.Slug != dex.Slug {
+		if *params.Slug == "" {
+			return errcodes.EmptySlug()
+		}
+
+		dex.Slug = *params.Slug
+		options.Columns = append(options.Columns, "slug")
+	}
+	if params.Shiny != nil && *params.Shiny != dex.Shiny {
+		dex.Shiny = *params.Shiny
+		options.Columns = append(options.Columns, "shiny")
+	}
+	if params.Game != nil && *params.Game != dex.GameID {
+		dex.GameID = *params.Game
+		options.Columns = append(options.Columns, "game_id")
+		updatingGame = true
+	}
+	if params.DexType != nil && *params.DexType != dex.DexTypeID {
+		dex.DexTypeID = *params.DexType
+		options.Columns = append(options.Columns, "dex_type_id")
+		options.UpdatingDexType = true
+	}
+
+	if updatingGame || options.UpdatingDexType {
+		// We're updating the game or the dex type, so we need to make sure they're still compatible.
+		game, err := h.gameService.RetrieveGame(ctx, games.RetrieveGameOptions{
+			ID: params.Game,
+		})
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		dexType, err := h.dexTypeService.RetrieveDexType(ctx, dextypes.RetrieveDexTypeOptions{
+			ID: params.DexType,
+		})
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		if game.GameFamilyID != dexType.GameFamilyID {
+			return errcodes.GameDexTypeMismatch()
+		}
+	}
+
+	// Save the dex.
+	err = h.dexService.UpdateDex(ctx, dex, options)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	// Reload the model.
+	dex, err = h.dexService.RetrieveDex(ctx, RetrieveDexOptions{
+		ID: &dex.ID,
+	})
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return errors.WithStack(c.JSON(http.StatusOK, dex))
+}
+
 func (h *handler) delete(c echo.Context) error {
 	ctx := c.Request().Context()
 	session := auth.FromContext(c)

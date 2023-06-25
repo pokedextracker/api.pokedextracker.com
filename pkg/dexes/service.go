@@ -2,6 +2,7 @@ package dexes
 
 import (
 	"context"
+	"time"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
@@ -15,6 +16,11 @@ type RetrieveDexOptions struct {
 	Username *string
 
 	IncludeDexTypePokemon bool
+}
+
+type UpdateDexOptions struct {
+	Columns         []string
+	UpdatingDexType bool
 }
 
 type DeleteDexOptions struct {
@@ -77,6 +83,50 @@ func (svc *Service) RetrieveDex(ctx context.Context, opts RetrieveDexOptions) (*
 	}
 
 	return dex, nil
+}
+
+func (svc *Service) UpdateDex(ctx context.Context, dex *Dex, opts UpdateDexOptions) error {
+	if len(opts.Columns) == 0 && !opts.UpdatingDexType {
+		// We're not updating anything, so just return early.
+		return nil
+	}
+
+	columns := append(opts.Columns, "date_modified")
+	dex.DateModified = time.Now()
+
+	err := svc.db.RunInTransaction(ctx, func(tx *pg.Tx) error {
+		if opts.UpdatingDexType {
+			// We're changing dex types, so we need to delete any captures that are part of the old dex type, but are
+			// not in the new one.
+			_, err := tx.Exec(`
+DELETE FROM captures WHERE pokemon_id IN (
+	SELECT pokemon_id FROM dex_types_pokemon WHERE pokemon_id NOT IN (
+		SELECT pokemon_id FROM dex_types_pokemon WHERE dex_type_id = ?
+	) AND dex_type_id = (
+		SELECT dex_type_id FROM dexes WHERE id = ?
+	)
+) AND dex_id = ?
+`, dex.DexTypeID, dex.ID, dex.ID)
+			if err != nil {
+				return errors.WithStack(err)
+			}
+		}
+
+		_, err := tx.
+			Model(dex).
+			Column(columns...).
+			WherePK().
+			Update()
+		if err != nil {
+			if errors.Is(err, pg.ErrNoRows) {
+				return errcodes.NotFound("dex")
+			}
+			return errors.WithStack(err)
+		}
+
+		return nil
+	})
+	return errors.WithStack(err)
 }
 
 func (svc *Service) DeleteDex(ctx context.Context, opts DeleteDexOptions) error {
