@@ -15,6 +15,10 @@ type RetrievePokemonOptions struct {
 	DexType *dextypes.DexType
 }
 
+type ListPokemonOptions struct {
+	IDs []int
+}
+
 type RetrieveEvolutionFamilyOptions struct {
 	EvolutionFamilyID *int
 	DexTypeID         *int
@@ -129,6 +133,25 @@ func (svc *Service) RetrievePokemon(ctx context.Context, opts RetrievePokemonOpt
 	}
 
 	pokemon.EvolutionFamily = family
+
+	return pokemon, nil
+}
+
+func (svc *Service) ListPokemon(ctx context.Context, opts ListPokemonOptions) ([]*Pokemon, error) {
+	pokemon := make([]*Pokemon, 0)
+
+	q := svc.db.
+		ModelContext(ctx, &pokemon).
+		Order("p.id ASC")
+
+	if len(opts.IDs) > 0 {
+		q = q.WhereIn("p.id IN (?)", opts.IDs)
+	}
+
+	err := q.Select()
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
 
 	return pokemon, nil
 }

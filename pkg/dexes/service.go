@@ -10,6 +10,7 @@ import (
 )
 
 type RetrieveDexOptions struct {
+	ID       *int
 	Slug     *string
 	Username *string
 
@@ -36,6 +37,9 @@ func (svc *Service) RetrieveDex(ctx context.Context, opts RetrieveDexOptions) (*
 		Relation("Game").
 		Relation("Game.GameFamily")
 
+	if opts.ID != nil {
+		q = q.Where("d.id = ?", *opts.ID)
+	}
 	if opts.Slug != nil {
 		q = q.Where("d.slug = ?", *opts.Slug)
 	}

@@ -22,7 +22,7 @@ type Pokemon struct {
 	Locations         []*Location       `pg:"l,rel:has-many" json:"locations"`
 	NationalOrder     int               `json:"-"`
 	EvolutionFamilyID int               `json:"-"`
-	EvolutionFamily   *EvolutionFamily  `json:"evolution_family"`
+	EvolutionFamily   *EvolutionFamily  `pg:"-" json:"evolution_family"`
 	DateCreated       time.Time         `json:"-"`
 	DateModified      time.Time         `json:"-"`
 }
