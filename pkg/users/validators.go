@@ -1,14 +1,16 @@
 package users
 
 type createParams struct {
-	Username   string  `form:"username" json:"username" mod:"trim" validate:"required,token,max=20"`
-	Password   string  `form:"password" json:"password" validate:"required,min=8,max=72"`
-	FriendCode *string `form:"friend_code" json:"friend_code" validate:"omitempty,friendcode"`
-	Referrer   *string `form:"referrer" json:"referrer" validate:"omitempty"`
-	Title      string  `form:"title" json:"title" mod:"trim" validate:"required,max=300"`
-	Shiny      *bool   `form:"shiny" json:"shiny" validate:"required"`
-	Game       string  `form:"game" json:"game" mod:"trim" validate:"required,max=50"`
-	Regional   *bool   `form:"regional" json:"regional" validate:"required"`
+	Username         string  `json:"username" mod:"trim" validate:"required,token,max=20"`
+	Password         string  `json:"password" validate:"required,min=8,max=72"`
+	FriendCode3DS    *string `json:"friend_code_3ds" validate:"omitempty,friend_code_3ds"`
+	FriendCodeSwitch *string `json:"friend_code_switch" validate:"omitempty,friend_code_3ds"`
+	Referrer         *string `json:"referrer" validate:"omitempty"`
+	Title            string  `json:"title" mod:"trim" validate:"required,max=300"`
+	Slug             string  `json:"slug" mod:"trim" validate:"omitempty,max=300"`
+	Shiny            *bool   `json:"shiny" validate:"required"`
+	Game             string  `json:"game" mod:"trim" validate:"required,max=50"`
+	DexType          int     `json:"dex_type" validate:"required"`
 }
 
 type listParams struct {

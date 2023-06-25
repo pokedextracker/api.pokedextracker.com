@@ -1,21 +1,138 @@
 package users
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/auth"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/config"
+	"github.com/pokedextracker/api.pokedextracker.com/pkg/dexes"
+	"github.com/pokedextracker/api.pokedextracker.com/pkg/dextypes"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/errcodes"
+	"github.com/pokedextracker/api.pokedextracker.com/pkg/games"
 	"github.com/robinjoseph08/golib/pointerutil"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type handler struct {
-	authService *auth.Service
-	config      *config.Config
-	userService *Service
+	authService    *auth.Service
+	config         *config.Config
+	dexTypeService *dextypes.Service
+	gameService    *games.Service
+	userService    *Service
+}
+
+func (h *handler) create(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	params := createParams{}
+	if err := c.Bind(&params); err != nil {
+		return errors.WithStack(err)
+	}
+
+	// Make sure a user with this username doesn't already exist. This doesn't really matter since we have a unique
+	// constraint, but it's to prevent blowing through our user ID sequence.
+	existing, err := h.userService.RetrieveUser(ctx, RetrieveUserOptions{
+		Username: &params.Username,
+	})
+	if err != nil && !errors.Is(err, errcodes.NotFound("user")) {
+		// We're expecting the not found error, so if we get one that different from that, it's a real error.
+		return errors.WithStack(err)
+	}
+	if existing != nil {
+		return errcodes.ExistingDex()
+	}
+
+	// Fetch the provided game and dex type to make sure they exist, but also to compare their game family IDs.
+	game, err := h.gameService.RetrieveGame(ctx, games.RetrieveGameOptions{
+		ID: &params.Game,
+	})
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	dexType, err := h.dexTypeService.RetrieveDexType(ctx, dextypes.RetrieveDexTypeOptions{
+		ID: &params.DexType,
+	})
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	// It's not possible through the frontend, but weird things can happen if the game and dex type don't match.
+	if game.GameFamilyID != dexType.GameFamilyID {
+		return errcodes.GameDexTypeMismatch()
+	}
+
+	// Hash the password.
+	hash, err := bcrypt.GenerateFromPassword([]byte(params.Password), h.config.BcryptCost)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	// Determine user's IP address.
+	var lastIP *string
+	xff := c.Request().Header.Get("x-forwarded-for")
+	ip := c.Request().RemoteAddr
+	fmt.Println("xff", xff)            // TODO: remove
+	fmt.Println("ip address", ip)      // TODO: remove
+	fmt.Println("real ip", c.RealIP()) // TODO: remove
+	if xff != "" {
+		ip = strings.TrimSpace(strings.Split(xff, ",")[0])
+	}
+	if ip != "" {
+		lastIP = &ip
+	}
+
+	now := time.Now()
+	user := &User{
+		Username:         params.Username,
+		FriendCode3DS:    params.FriendCode3DS,
+		FriendCodeSwitch: params.FriendCodeSwitch,
+		Password:         string(hash),
+		LastIP:           lastIP,
+		LastLogin:        pointerutil.Time(now),
+		Referrer:         params.Referrer,
+		DateCreated:      now,
+		DateModified:     now,
+	}
+	dex := &dexes.Dex{
+		Title:        params.Title,
+		Slug:         params.Slug,
+		Shiny:        *params.Shiny,
+		GameID:       params.Game,
+		DexTypeID:    params.DexType,
+		DateCreated:  now,
+		DateModified: now,
+	}
+
+	err = h.userService.CreateUserAndDex(ctx, user, dex)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	// Fetch the session so that we can sign it.
+	session, err := h.authService.RetrieveSession(ctx, auth.RetrieveSessionOptions{
+		Username: &user.Username,
+	})
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	// Generate a new session token since we encode user information in the token.
+	token, err := h.authService.SignSession(ctx, session)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	resp := struct {
+		Token string `json:"token"`
+	}{token}
+
+	return errors.WithStack(c.JSON(http.StatusOK, resp))
 }
 
 func (h *handler) retrieve(c echo.Context) error {

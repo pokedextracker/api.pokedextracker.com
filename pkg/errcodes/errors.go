@@ -159,6 +159,14 @@ func EmptySlug() error {
 	}
 }
 
+func ExistingUser() error {
+	return &Error{
+		http.StatusUnprocessableEntity,
+		"username is already taken",
+		"existing_user",
+	}
+}
+
 func ExistingDex() error {
 	return &Error{
 		http.StatusUnprocessableEntity,

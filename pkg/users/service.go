@@ -7,6 +7,7 @@ import (
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
 	"github.com/pkg/errors"
+	"github.com/pokedextracker/api.pokedextracker.com/pkg/dexes"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/errcodes"
 )
 
@@ -29,6 +30,25 @@ type Service struct {
 
 func NewService(db *pg.DB) *Service {
 	return &Service{db}
+}
+
+func (svc *Service) CreateUserAndDex(ctx context.Context, user *User, dex *dexes.Dex) error {
+	err := svc.db.RunInTransaction(ctx, func(tx *pg.Tx) error {
+		_, err := tx.
+			ModelContext(ctx, user).
+			Returning("*").
+			Insert()
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		dex.UserID = user.ID
+		_, err = tx.
+			ModelContext(ctx, dex).
+			Insert()
+		return errors.WithStack(err)
+	})
+	return errors.WithStack(err)
 }
 
 func (svc *Service) RetrieveUser(ctx context.Context, opts RetrieveUserOptions) (*User, error) {
