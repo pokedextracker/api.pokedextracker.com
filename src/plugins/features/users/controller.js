@@ -65,7 +65,7 @@ exports.create = function (payload, request) {
         return new Dex().save({
           user_id: user.id,
           title: payload.title,
-          slug: Slug(payload.title, { lower: true }),
+          slug: payload.slug || Slug(payload.title, { lower: true }),
           shiny: payload.shiny,
           game_id: payload.game,
           dex_type_id: payload.dex_type
