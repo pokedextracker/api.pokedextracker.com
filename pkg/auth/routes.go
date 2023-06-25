@@ -7,13 +7,12 @@ import (
 )
 
 // RegisterRoutes takes in an Echo router and registers routes onto it.
-func RegisterRoutes(e *echo.Echo, cfg *config.Config, db *pg.DB) {
-	sessionService := NewService(db)
+func RegisterRoutes(e *echo.Echo, cfg *config.Config, db *pg.DB, nonEnforceAuth echo.MiddlewareFunc) {
+	sessionService := NewService(cfg, db)
 
 	h := &handler{
-		config:         cfg,
 		sessionService: sessionService,
 	}
 
-	e.POST("/sessions", h.create)
+	e.POST("/sessions", h.create, nonEnforceAuth)
 }

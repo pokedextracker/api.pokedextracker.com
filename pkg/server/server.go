@@ -41,15 +41,17 @@ func New(cfg *config.Config, db *pg.DB) (*http.Server, error) {
 		AllowOrigins: []string{cfg.FrontendURL},
 	}))
 
-	health.RegisterRoutes(e)
-	auth.RegisterRoutes(e, cfg, db)
+	enforcedAuth, nonEnforcedAuth := auth.Middleware(cfg, db)
 
-	captures.RegisterRoutes(e, db)
-	dexes.RegisterRoutes(e, db)
-	dextypes.RegisterRoutes(e, db)
-	games.RegisterRoutes(e, db)
-	pokemon.RegisterRoutes(e, db)
-	users.RegisterRoutes(e, db)
+	health.RegisterRoutes(e)
+	auth.RegisterRoutes(e, cfg, db, nonEnforcedAuth)
+
+	captures.RegisterRoutes(e, db, enforcedAuth, nonEnforcedAuth)
+	dexes.RegisterRoutes(e, db, enforcedAuth, nonEnforcedAuth)
+	dextypes.RegisterRoutes(e, db, nonEnforcedAuth)
+	games.RegisterRoutes(e, db, nonEnforcedAuth)
+	pokemon.RegisterRoutes(e, db, nonEnforcedAuth)
+	users.RegisterRoutes(e, db, enforcedAuth, nonEnforcedAuth)
 
 	echo.NotFoundHandler = notFoundHandler
 	e.HTTPErrorHandler = errcodes.NewHandler().Handle
@@ -64,5 +66,5 @@ func New(cfg *config.Config, db *pg.DB) (*http.Server, error) {
 
 func notFoundHandler(c echo.Context) error {
 	c.SetPath("/:path")
-	return errcodes.NotFound("Page")
+	return errcodes.NotFound("page")
 }

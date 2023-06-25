@@ -6,12 +6,12 @@ import (
 )
 
 // RegisterRoutes takes in an Echo router and registers routes onto it.
-func RegisterRoutes(e *echo.Echo, db *pg.DB) {
+func RegisterRoutes(e *echo.Echo, db *pg.DB, enforceAuth echo.MiddlewareFunc, nonEnforceAuth echo.MiddlewareFunc) {
 	dexService := NewService(db)
 
 	h := &handler{
 		dexService: dexService,
 	}
 
-	e.GET("/users/:username/dexes/:slug", h.retrieve)
+	e.GET("/users/:username/dexes/:slug", h.retrieve, nonEnforceAuth)
 }

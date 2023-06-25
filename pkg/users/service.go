@@ -51,7 +51,7 @@ func (svc *Service) RetrieveUser(ctx context.Context, opts RetrieveUserOptions) 
 	err := q.Select()
 	if err != nil {
 		if errors.Is(err, pg.ErrNoRows) {
-			return nil, errcodes.NotFound("User")
+			return nil, errcodes.NotFound("user")
 		}
 		return nil, errors.WithStack(err)
 	}

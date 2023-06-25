@@ -6,17 +6,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/pokedextracker/api.pokedextracker.com/pkg/config"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/errcodes"
 	"github.com/robinjoseph08/golib/pointerutil"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type handler struct {
-	config         *config.Config
 	sessionService *Service
 }
 
@@ -50,8 +47,9 @@ func (h *handler) create(c echo.Context) error {
 	}
 	xff := c.Request().Header.Get("x-forwarded-for")
 	ip := c.Request().RemoteAddr
-	fmt.Println("xff", xff)       // TODO: remove
-	fmt.Println("ip address", ip) // TODO: remove
+	fmt.Println("xff", xff)            // TODO: remove
+	fmt.Println("ip address", ip)      // TODO: remove
+	fmt.Println("real ip", c.RealIP()) // TODO: remove
 	if xff != "" {
 		ip = strings.TrimSpace(strings.Split(xff, ",")[0])
 	}
@@ -66,15 +64,14 @@ func (h *handler) create(c echo.Context) error {
 		return errors.WithStack(err)
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, session)
-	signed, err := token.SignedString(h.config.JWTSecret)
+	token, err := h.sessionService.SignSession(ctx, session)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
 	resp := struct {
 		Token string `json:"token"`
-	}{signed}
+	}{token}
 
 	return errors.WithStack(c.JSON(http.StatusOK, resp))
 }

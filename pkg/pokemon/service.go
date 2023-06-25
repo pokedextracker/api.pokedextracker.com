@@ -58,7 +58,7 @@ func (svc *Service) RetrievePokemon(ctx context.Context, opts RetrievePokemonOpt
 	err := q.Select()
 	if err != nil {
 		if errors.Is(err, pg.ErrNoRows) {
-			return nil, errcodes.NotFound("Pokemon")
+			return nil, errcodes.NotFound("pokemon")
 		}
 		return nil, errors.WithStack(err)
 	}

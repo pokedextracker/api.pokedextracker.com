@@ -36,7 +36,7 @@ func (svc *Service) RetrieveDexType(ctx context.Context, opts RetrieveDexTypeOpt
 	err := q.Select()
 	if err != nil {
 		if errors.Is(err, pg.ErrNoRows) {
-			return nil, errcodes.NotFound("Dex type")
+			return nil, errcodes.NotFound("dex type")
 		}
 		return nil, errors.WithStack(err)
 	}

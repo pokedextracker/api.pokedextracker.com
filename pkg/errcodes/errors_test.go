@@ -16,7 +16,6 @@ func TestErrors(t *testing.T) {
 	}{
 		{Forbidden("Foo"), http.StatusForbidden, "Foo is not allowed.", "forbidden"},
 		{NotFound("Foo"), http.StatusNotFound, "Foo not found.", "not_found"},
-		{Unauthorized(), http.StatusUnauthorized, "You're unauthorized. Please log in again.", "unauthorized"},
 	}
 
 	for _, tt := range cases {

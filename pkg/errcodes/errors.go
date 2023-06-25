@@ -55,16 +55,6 @@ func NotFound(resource string) error {
 	}
 }
 
-// Unauthorized returns a 401 error with a message indicating the action is
-// unauthorized.
-func Unauthorized() error {
-	return &Error{
-		http.StatusUnauthorized,
-		"You're unauthorized. Please log in again.",
-		"unauthorized",
-	}
-}
-
 func UnsupportedMediaType() error {
 	return &Error{
 		http.StatusUnsupportedMediaType,
@@ -118,5 +108,45 @@ func InvalidPassword() error {
 		http.StatusUnprocessableEntity,
 		"password is invalid",
 		"invalid_password",
+	}
+}
+
+func MissingAuthentication() error {
+	return &Error{
+		http.StatusUnauthorized,
+		"missing authentication",
+		"missing_authentication",
+	}
+}
+
+func BadAuthHeaderFormat() error {
+	return &Error{
+		http.StatusUnauthorized,
+		"bad HTTP authentication header format",
+		"bad_auth_header_format",
+	}
+}
+
+func CannotParseToken() error {
+	return &Error{
+		http.StatusInternalServerError,
+		"cannot parse token correctly",
+		"cannot_parse_token",
+	}
+}
+
+func InvalidJWTSignature() error {
+	return &Error{
+		http.StatusUnauthorized,
+		"invalid signature received for JSON Web Token validation",
+		"invalid_jwt_signature",
+	}
+}
+
+func InvalidJWT() error {
+	return &Error{
+		http.StatusInternalServerError,
+		"auth token is invalid",
+		"invalid_jwt",
 	}
 }

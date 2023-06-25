@@ -6,12 +6,12 @@ import (
 )
 
 // RegisterRoutes takes in an Echo router and registers routes onto it.
-func RegisterRoutes(e *echo.Echo, db *pg.DB) {
+func RegisterRoutes(e *echo.Echo, db *pg.DB, nonEnforceAuth echo.MiddlewareFunc) {
 	gameService := NewService(db)
 
 	h := &handler{
 		gameService: gameService,
 	}
 
-	e.GET("/games", h.list)
+	e.GET("/games", h.list, nonEnforceAuth)
 }

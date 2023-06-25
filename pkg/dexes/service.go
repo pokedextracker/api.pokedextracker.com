@@ -55,7 +55,7 @@ func (svc *Service) RetrieveDex(ctx context.Context, opts RetrieveDexOptions) (*
 	err := q.Select()
 	if err != nil {
 		if errors.Is(err, pg.ErrNoRows) {
-			return nil, errcodes.NotFound("Dex")
+			return nil, errcodes.NotFound("dex")
 		}
 		return nil, errors.WithStack(err)
 	}
