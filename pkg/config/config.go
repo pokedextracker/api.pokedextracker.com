@@ -27,6 +27,7 @@ type Config struct {
 	Hostname                  string
 	JWTSecret                 []byte
 	Port                      int
+	RollbarToken              string
 	Version                   string
 }
 
@@ -58,6 +59,7 @@ func New() (*Config, error) {
 		Hostname:                  hostname,
 		JWTSecret:                 []byte(os.Getenv("JWT_SECRET")),
 		Port:                      8647,
+		RollbarToken:              os.Getenv("ROLLBAR_TOKEN"),
 		Version:                   os.Getenv("VERSION"),
 	}
 

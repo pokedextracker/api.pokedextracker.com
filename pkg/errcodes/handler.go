@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/robinjoseph08/golib/echo/v4/middleware/logger"
 	"github.com/robinjoseph08/golib/errutils"
+	"github.com/rollbar/rollbar-go"
 )
 
 type Handler struct{}
@@ -28,7 +29,14 @@ func (h *Handler) Handle(err error, c echo.Context) {
 
 	// Internal server errors
 	if httpCode == http.StatusInternalServerError {
-		// TODO: report to centralized error reporting software.
+		extra := map[string]interface{}{
+			"request_id": logger.IDFromEchoContext(c),
+		}
+		// We can't import the auth package since it would create an import cycle.
+		if userID, ok := c.Get("userID").(int); ok {
+			extra["user_id"] = userID
+		}
+		rollbar.RequestErrorWithExtrasAndContext(c.Request().Context(), rollbar.ERR, c.Request(), errutils.Unwrap(err), extra)
 		logger.FromEchoContext(c).Err(err).Error("server error")
 	}
 

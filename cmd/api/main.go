@@ -2,7 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/pkg/errors"
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/config"
@@ -10,6 +14,8 @@ import (
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/server"
 	"github.com/robinjoseph08/golib/logger"
 	"github.com/robinjoseph08/golib/signals"
+	"github.com/rollbar/rollbar-go"
+	rberrors "github.com/rollbar/rollbar-go/errors"
 )
 
 func main() {
@@ -23,6 +29,25 @@ func main() {
 	if err != nil {
 		log.Err(err).Fatal("database error")
 	}
+	executable, err := os.Executable()
+	if err != nil {
+		log.Err(err).Fatal("os executable error")
+	}
+	fmt.Println(filepath.Dir(filepath.Dir(executable))) // TODO: remove
+
+	// Configure Rollbar.
+	rollbar.SetToken(cfg.RollbarToken)
+	rollbar.SetEnvironment(cfg.Environment)
+	rollbar.SetCodeVersion(cfg.Version)
+	rollbar.SetServerRoot(filepath.Dir(filepath.Dir(executable)))
+	rollbar.SetStackTracer(func(err error) ([]runtime.Frame, bool) {
+		// Preserve the default behavior for other types of errors.
+		if trace, ok := rollbar.DefaultStackTracer(err); ok {
+			return trace, ok
+		}
+
+		return rberrors.StackTracer(err)
+	})
 
 	srv, err := server.New(cfg, db)
 	if err != nil {
@@ -55,4 +80,6 @@ func main() {
 		log.Err(err).Error("db close error")
 	}
 	log.Info("db close")
+
+	rollbar.Close()
 }

@@ -16,6 +16,8 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/robinjoseph08/go-pg-migrations/v3 v3.0.0
 	github.com/robinjoseph08/golib v0.2.1
+	github.com/rollbar/rollbar-go v1.4.5
+	github.com/rollbar/rollbar-go/errors v0.0.0-20220927065624-ed38c7c74ef6
 	github.com/segmentio/encoding v0.3.6
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/crypto v0.10.0
