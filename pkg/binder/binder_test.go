@@ -30,7 +30,7 @@ func TestNew(t *testing.T) {
 		c := newContext(goodJSON, echo.MIMEApplicationXML)
 		p := params{}
 		err = b.Bind(&p, c)
-		assert.Contains(t, err.Error(), "Unsupported Media Type")
+		assert.Contains(t, err.Error(), "unsupported media type")
 	})
 
 	t.Run("allows charset to be passed in", func(tt *testing.T) {
@@ -45,7 +45,7 @@ func TestNew(t *testing.T) {
 		c := newContext(unknownFieldsErrJSON, echo.MIMEApplicationJSON)
 		p := params{}
 		err = b.Bind(&p, c)
-		assert.Contains(t, err.Error(), `Unknown Parameter "foo"`)
+		assert.Contains(t, err.Error(), `unknown parameter "foo"`)
 	})
 
 	t.Run("returns a good message for type errors", func(tt *testing.T) {

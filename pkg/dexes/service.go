@@ -134,6 +134,9 @@ func (svc *Service) DeleteDex(ctx context.Context, opts DeleteDexOptions) error 
 		ModelContext(ctx, (*Dex)(nil)).
 		Where("d.user_id = ?", opts.UserID).
 		Count()
+	if err != nil {
+		return errors.WithStack(err)
+	}
 
 	if count == 1 {
 		return errcodes.AtLeastOneDex()
