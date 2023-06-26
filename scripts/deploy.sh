@@ -36,6 +36,7 @@ DOCKER_BUILDKIT=1 docker buildx build \
   --push \
   --builder multiarch \
   --platform linux/arm64,linux/amd64 \
+  --build-arg VERSION=${TAG} \
   --tag ${REPO}:${TAG} \
   .
 

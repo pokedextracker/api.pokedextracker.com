@@ -8,6 +8,9 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Version will be set using a linker flag when we build for production.
+var Version = ""
+
 // Config contains the environment specific configuration values needed by the
 // application.
 type Config struct {
@@ -60,7 +63,7 @@ func New() (*Config, error) {
 		JWTSecret:                 []byte(os.Getenv("JWT_SECRET")),
 		Port:                      8647,
 		RollbarToken:              os.Getenv("ROLLBAR_TOKEN"),
-		Version:                   os.Getenv("VERSION"),
+		Version:                   Version,
 	}
 
 	switch os.Getenv(environmentENV) {
