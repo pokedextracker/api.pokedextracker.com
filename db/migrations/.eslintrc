@@ -1,6 +1,0 @@
-{
-  "extends": "lob/migrations",
-  "rules": {
-    "arrow-body-style": 0
-  }
-}

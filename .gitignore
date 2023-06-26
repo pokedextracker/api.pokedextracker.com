@@ -108,3 +108,7 @@ tags
 
 .env*
 .idea
+bin
+tmp
+*.out
+cmd/scratch
