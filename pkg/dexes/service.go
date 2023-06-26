@@ -40,7 +40,14 @@ func (svc *Service) CreateDex(ctx context.Context, dex *Dex) error {
 	_, err := svc.db.
 		ModelContext(ctx, dex).
 		Insert()
-	return errors.WithStack(err)
+	if err != nil {
+		if errcodes.IsPGUniqueViolation(err) {
+			// If we tried to use a title/slug value that already exists for this user, it will throw this error.
+			return errcodes.ExistingDex()
+		}
+		return errors.WithStack(err)
+	}
+	return nil
 }
 
 func (svc *Service) RetrieveDex(ctx context.Context, opts RetrieveDexOptions) (*Dex, error) {
@@ -120,6 +127,11 @@ DELETE FROM captures WHERE pokemon_id IN (
 		if err != nil {
 			if errors.Is(err, pg.ErrNoRows) {
 				return errcodes.NotFound("dex")
+			}
+			if errcodes.IsPGUniqueViolation(err) {
+				// If we tried to update the dex's title/slug to a value that already exists for this user, it will
+				// throw this error.
+				return errcodes.ExistingDex()
 			}
 			return errors.WithStack(err)
 		}
