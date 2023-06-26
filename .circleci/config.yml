@@ -6,6 +6,7 @@ jobs:
       - image: cimg/go:1.20.5
         environment:
           ENVIRONMENT: test
+          DATABASE_PORT: "5432"
       - image: cimg/postgres:13.6
         environment:
           POSTGRES_DB: pokedex_tracker_test
