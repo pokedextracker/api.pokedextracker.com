@@ -1,9 +1,7 @@
 package users
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -75,14 +73,7 @@ func (h *handler) create(c echo.Context) error {
 
 	// Determine user's IP address.
 	var lastIP *string
-	xff := c.Request().Header.Get("x-forwarded-for")
-	ip := c.Request().RemoteAddr
-	fmt.Println("xff", xff)            // TODO: remove
-	fmt.Println("ip address", ip)      // TODO: remove
-	fmt.Println("real ip", c.RealIP()) // TODO: remove
-	if xff != "" {
-		ip = strings.TrimSpace(strings.Split(xff, ",")[0])
-	}
+	ip := c.RealIP()
 	if ip != "" {
 		lastIP = &ip
 	}

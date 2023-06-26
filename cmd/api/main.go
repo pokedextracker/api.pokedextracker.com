@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -33,7 +32,6 @@ func main() {
 	if err != nil {
 		log.Err(err).Fatal("os executable error")
 	}
-	fmt.Println(filepath.Dir(filepath.Dir(executable))) // TODO: remove
 
 	// Configure Rollbar.
 	rollbar.SetToken(cfg.RollbarToken)

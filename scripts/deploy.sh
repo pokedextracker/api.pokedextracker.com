@@ -69,13 +69,13 @@ kubectl run \
         "containers": [{
           "name": "migrations-'"${TAG}"'",
           "image": "'"${REPO}"':'"${TAG}"'",
-          "command": ["yarn", "db:migrate"],
+          "command": ["migrations", "migrate"],
           "env": .[0].spec.template.spec.containers[0].env
         }]
       }
     }'
   )" \
-  --command -- yarn db:migrate
+  --command -- migrations migrate
 
 echo
 echo -e "\033[1;32m==> Deploying ${TAG} to staging on ${KUBE_CONTEXT}...\033[0m"
@@ -124,13 +124,13 @@ if [ "${proceed}" == "yes" ]; then
           "containers": [{
             "name": "migrations-'"${TAG}"'",
             "image": "'"${REPO}"':'"${TAG}"'",
-            "command": ["yarn", "db:migrate"],
+            "command": ["migrations", "migrate"],
             "env": .[0].spec.template.spec.containers[0].env
           }]
         }
       }'
     )" \
-    --command -- yarn db:migrate
+    --command -- migrations migrate
 
   echo
   echo -e "\033[1;32m==> Deploying ${TAG} to production on ${KUBE_CONTEXT}...\033[0m"

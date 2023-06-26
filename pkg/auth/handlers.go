@@ -1,9 +1,7 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -45,16 +43,9 @@ func (h *handler) create(c echo.Context) error {
 	options := UpdateSessionOptions{
 		Columns: []string{},
 	}
-	xff := c.Request().Header.Get("x-forwarded-for")
-	ip := c.Request().RemoteAddr
-	fmt.Println("xff", xff)            // TODO: remove
-	fmt.Println("ip address", ip)      // TODO: remove
-	fmt.Println("real ip", c.RealIP()) // TODO: remove
-	if xff != "" {
-		ip = strings.TrimSpace(strings.Split(xff, ",")[0])
-	}
 	session.LastLogin = pointerutil.Time(time.Now())
 	options.Columns = append(options.Columns, "last_login")
+	ip := c.RealIP()
 	if ip != "" {
 		session.LastIP = &ip
 		options.Columns = append(options.Columns, "last_ip")

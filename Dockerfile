@@ -33,3 +33,5 @@ ENV PATH="$PATH:/app/bin"
 COPY --from=build /app/cmd /app/cmd
 COPY --from=build /app/pkg /app/pkg
 COPY --from=build /app/bin /app/bin
+
+CMD ["api"]
