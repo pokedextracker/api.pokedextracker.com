@@ -159,11 +159,11 @@ func EmptySlug() error {
 	}
 }
 
-func ExistingUser() error {
+func ExistingUsername() error {
 	return &Error{
 		http.StatusUnprocessableEntity,
 		"username is already taken",
-		"existing_user",
+		"existing_username",
 	}
 }
 

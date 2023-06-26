@@ -42,7 +42,7 @@ func (h *handler) create(c echo.Context) error {
 		return errors.WithStack(err)
 	}
 	if existing != nil {
-		return errcodes.ExistingDex()
+		return errcodes.ExistingUsername()
 	}
 
 	// Fetch the provided game and dex type to make sure they exist, but also to compare their game family IDs.

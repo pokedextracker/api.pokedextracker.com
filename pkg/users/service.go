@@ -39,6 +39,9 @@ func (svc *Service) CreateUserAndDex(ctx context.Context, user *User, dex *dexes
 			Returning("*").
 			Insert()
 		if err != nil {
+			if errcodes.IsPGUniqueViolation(err) {
+				return errcodes.ExistingUsername()
+			}
 			return errors.WithStack(err)
 		}
 
