@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-pg/pg/v10"
 	"github.com/pkg/errors"
+	"github.com/pokedextracker/api.pokedextracker.com/pkg/errcodes"
 )
 
 type ListCapturesOptions struct {
@@ -38,14 +39,29 @@ func (svc *Service) CreateCaptures(ctx context.Context, captures []*Capture) err
 	for _, capture := range captures {
 		capture.DateCreated = now
 		capture.DateModified = now
+
+		_, err := svc.db.
+			ModelContext(ctx, capture).
+			Insert()
+		if err != nil {
+			if errcodes.IsPGUniqueViolation(err) {
+				// If it's a unique constraint error, just ignore it. The only unique constraint we have on captures is
+				// with (dex_id, pokemon_id), so if we get a conflict, it means we already have the capture in the
+				// database.
+				continue
+			}
+			return errors.WithStack(err)
+		}
 	}
 
-	_, err := svc.db.
-		ModelContext(ctx, &captures).
-		// TODO: Once we upgrade to a newer version Postgres, add the OnConflict in.
-		// OnConflict("DO NOTHING").
-		Insert()
-	return errors.WithStack(err)
+	// TODO: Once we upgrade to a newer version Postgres, insert all captures at once and use OnConflict.
+	// _, err := svc.db.
+	// 	ModelContext(ctx, &captures).
+	// 	OnConflict("DO NOTHING").
+	// 	Insert()
+	// return errors.WithStack(err)
+
+	return nil
 }
 
 func (svc *Service) ListCaptures(ctx context.Context, opts ListCapturesOptions) ([]*Capture, error) {
