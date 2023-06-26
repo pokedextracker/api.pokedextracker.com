@@ -31,6 +31,12 @@ func (h *Handler) Handle(err error, c echo.Context) {
 		logger.FromEchoContext(c).Warn("context canceled")
 		return
 	}
+	if IsPGUserCancel(err) {
+		// If the context was cancelled during a SQL query, so the query ended early. This is also probably because the
+		// client canceled the request, so we don't need to error on it.
+		logger.FromEchoContext(c).Warn("user canceled statement")
+		return
+	}
 
 	httpCode, payload := h.generatePayload(c, err)
 

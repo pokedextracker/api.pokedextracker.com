@@ -10,6 +10,7 @@ import (
 const (
 	PGDeadlockDetectedCode = "40P01"
 	PGUniqueViolationCode  = "23505"
+	PGUserCancel           = "57014"
 )
 
 func IsPGDeadlockDetected(err error) bool {
@@ -20,4 +21,9 @@ func IsPGDeadlockDetected(err error) bool {
 func IsPGUniqueViolation(err error) bool {
 	var pgerr pg.Error
 	return errors.As(err, &pgerr) && pgerr.Field('C') == PGUniqueViolationCode
+}
+
+func IsPGUserCancel(err error) bool {
+	var pgerr pg.Error
+	return errors.As(err, &pgerr) && pgerr.Field('C') == PGUserCancel
 }
