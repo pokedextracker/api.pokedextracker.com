@@ -1,6 +1,7 @@
 package errcodes
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/iancoleman/strcase"
@@ -21,7 +22,13 @@ func NewHandler() *Handler {
 // generic error will be interpreted as an internal server error.
 func (h *Handler) Handle(err error, c echo.Context) {
 	if errutils.IsIgnorableErr(err) {
-		logger.FromEchoContext(c).Err(err).Warn("broken pipe")
+		logger.FromEchoContext(c).Warn("broken pipe")
+		return
+	}
+	if errors.Is(err, context.Canceled) {
+		// If the context was cancelled, it's probably because the client canceled the request, so we don't need to
+		// error on it.
+		logger.FromEchoContext(c).Warn("context canceled")
 		return
 	}
 
