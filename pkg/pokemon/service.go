@@ -118,6 +118,15 @@ func (svc *Service) RetrievePokemon(ctx context.Context, opts RetrievePokemonOpt
 		return nil, errors.WithStack(err)
 	}
 
+	// Filter out any evolution lines that don't have any Pokemon in them. This can happen in a pre-evolution isn't
+	// present in this dex type. This can be tested on Clefairy on a regional LGPE dex.
+	for len(family.Pokemon) > 0 && len(family.Pokemon[0]) == 0 {
+		family.Pokemon = removeIndex(family.Pokemon, 0)
+	}
+	for len(family.Evolutions) > 0 && len(family.Evolutions[0]) == 0 {
+		family.Evolutions = removeIndex(family.Evolutions, 0)
+	}
+
 	if len(family.Pokemon) == 0 {
 		// This Pokemon has no evolutions, so we just need to add it as the single Pokemon in its family.
 		family.Pokemon = append(family.Pokemon, []*EvolutionPokemon{
@@ -228,4 +237,10 @@ func hasEvolutionPokemon(ep *EvolutionPokemon, pokemon []*EvolutionPokemon) bool
 		}
 	}
 	return false
+}
+
+// removeIndex is a generic function that takes in any slice and an index, and it returns a new slice with the element
+// at that index removed.
+func removeIndex[T any](s []T, i int) []T {
+	return append(s[0:i], s[i+1:]...)
 }
