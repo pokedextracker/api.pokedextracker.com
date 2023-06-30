@@ -1,7 +1,6 @@
 package pokemon
 
 import (
-	"strings"
 	"time"
 
 	"github.com/pokedextracker/api.pokedextracker.com/pkg/games"
@@ -34,19 +33,18 @@ type Location struct {
 	Game      *games.Game `pg:"g,rel:has-one" json:"game"`
 	PokemonID int         `json:"-"`
 	Value     string      `json:"value"`
+	Values    []string    `pg:",array" json:"values"`
 }
 
 // MarshalJSON is just needed for parity testing. Once we're actually using this in production, we can remove it.
 func (l *Location) MarshalJSON() ([]byte, error) {
-	value := strings.Split(l.Value, ", ")
-
 	type Alias Location
 	return json.Marshal(&struct {
 		*Alias
 		Value []string `json:"value"`
 	}{
 		Alias: (*Alias)(l),
-		Value: value,
+		Value: l.Values,
 	})
 }
 
