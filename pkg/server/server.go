@@ -39,7 +39,7 @@ func New(cfg *config.Config, db *pg.DB) (*http.Server, error) {
 	e.Use(logger.Middleware())
 	e.Use(recovery.Middleware())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{cfg.FrontendURL},
+		AllowOrigins: cfg.CORSAllowedOrigins,
 	}))
 
 	enforcedAuth, nonEnforcedAuth := auth.Middleware(cfg, db)

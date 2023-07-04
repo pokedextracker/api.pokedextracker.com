@@ -15,6 +15,7 @@ var Version = ""
 // application.
 type Config struct {
 	BcryptCost                int
+	CORSAllowedOrigins        []string
 	DatabaseConnectRetryCount int
 	DatabaseConnectRetryDelay time.Duration
 	DatabaseDebug             bool
@@ -26,7 +27,6 @@ type Config struct {
 	DatabaseSSLMode           string
 	DatabaseUser              string
 	Environment               string
-	FrontendURL               string
 	Hostname                  string
 	JWTSecret                 []byte
 	Port                      int
