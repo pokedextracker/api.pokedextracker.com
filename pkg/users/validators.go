@@ -4,7 +4,7 @@ type createParams struct {
 	Username         string  `json:"username" mod:"trim" validate:"required,token,max=20"`
 	Password         string  `json:"password" validate:"required,min=8,max=72"`
 	FriendCode3DS    *string `json:"friend_code_3ds" validate:"omitempty,friend_code_3ds"`
-	FriendCodeSwitch *string `json:"friend_code_switch" validate:"omitempty,friend_code_3ds"`
+	FriendCodeSwitch *string `json:"friend_code_switch" validate:"omitempty,friend_code_switch"`
 	Referrer         *string `json:"referrer" validate:"omitempty"`
 	Title            string  `json:"title" mod:"trim" validate:"required,max=300"`
 	Slug             string  `json:"slug" mod:"trim" validate:"omitempty,max=300"`
