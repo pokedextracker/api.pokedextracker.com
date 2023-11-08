@@ -14,13 +14,15 @@ func init() {
 type DexType struct {
 	tableName struct{} `pg:"dex_types,alias:dt"`
 
-	ID           int                        `json:"id"`
-	Name         string                     `json:"name"`
-	GameFamilyID string                     `json:"game_family_id"`
-	GameFamily   *games.GameFamily          `pg:"gf,rel:has-one" json:"-"`
-	Order        int                        `json:"order"`
-	Tags         []string                   `pg:",array" json:"tags"`
-	Pokemon      []*pokemoncaptures.Pokemon `pg:"p,many2many:dex_types_pokemon" json:"-"`
+	ID            int                        `json:"id"`
+	Name          string                     `json:"name"`
+	Description   *string                    `json:"description,omitempty"`
+	GameFamilyID  string                     `json:"game_family_id"`
+	GameFamily    *games.GameFamily          `pg:"gf,rel:has-one" json:"-"`
+	Order         int                        `json:"order"`
+	Tags          []string                   `pg:",array" json:"tags"`
+	BaseDexTypeID *int                       `json:"base_dex_type_id,omitempty"`
+	Pokemon       []*pokemoncaptures.Pokemon `pg:"p,many2many:dex_types_pokemon" json:"-"`
 }
 
 type DexTypePokemon struct {

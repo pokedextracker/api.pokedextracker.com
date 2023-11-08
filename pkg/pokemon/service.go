@@ -2,6 +2,7 @@ package pokemon
 
 import (
 	"context"
+	"regexp"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
@@ -24,6 +25,8 @@ type RetrieveEvolutionFamilyOptions struct {
 	DexTypeID         *int
 	GameFamilyID      *string
 }
+
+var expansionRE = regexp.MustCompile(`^(.*)_expansion_pass$`)
 
 type Service struct {
 	db *pg.DB
@@ -79,7 +82,8 @@ func (svc *Service) RetrievePokemon(ctx context.Context, opts RetrievePokemonOpt
 		locations := make([]*Location, 0)
 		for _, location := range pokemon.Locations {
 			if regional {
-				if opts.DexType.GameFamilyID == "sword_shield_expansion_pass" && location.Game.GameFamilyID == "sword_shield" {
+				m := expansionRE.FindAllStringSubmatch(opts.DexType.GameFamilyID, -1)
+				if m != nil && location.Game.GameFamilyID == m[0][1] {
 					// If the game family we're filtering by is the regional sword and shield expansion pass dex, then
 					// it should include the locations for the expansion and the original sword and shield.
 					locations = append(locations, location)
