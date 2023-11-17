@@ -22,6 +22,7 @@ type DexType struct {
 	Order         int                        `json:"order"`
 	Tags          []string                   `pg:",array" json:"tags"`
 	BaseDexTypeID *int                       `json:"base_dex_type_id,omitempty"`
+	BaseDexType   *DexType                   `json:"base_dex_type,omitempty"`
 	Pokemon       []*pokemoncaptures.Pokemon `pg:"p,many2many:dex_types_pokemon" json:"-"`
 }
 

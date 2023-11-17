@@ -59,6 +59,7 @@ func (svc *Service) RetrieveDex(ctx context.Context, opts RetrieveDexOptions) (*
 		ColumnExpr("(SELECT COUNT(*) FROM captures WHERE dex_id = d.id) AS caught").
 		ColumnExpr("(SELECT COUNT(*) FROM dex_types_pokemon WHERE dex_type_id = d.dex_type_id) AS total").
 		Relation("DexType").
+		Relation("DexType.BaseDexType").
 		Relation("Game").
 		Relation("Game.GameFamily")
 
