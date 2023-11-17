@@ -69,6 +69,7 @@ func (svc *Service) RetrieveUser(ctx context.Context, opts RetrieveUserOptions) 
 				Order("d.date_created ASC"), nil
 		}).
 		Relation("Dexes.DexType").
+		Relation("Dexes.DexType.BaseDexType").
 		Relation("Dexes.Game").
 		Relation("Dexes.Game.GameFamily")
 
