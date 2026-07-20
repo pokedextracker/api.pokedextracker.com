@@ -4,17 +4,27 @@
 
 The API for [pokedextracker.com](http://pokedextracker.com). 
 
-## Install
+## Local Development
 
-TODO
+See [DEVELOPMENT.md](DEVELOPMENT.md) for full local setup instructions including database seeding, Legends Z-A data, and test user configuration.
+
+**Quick start:**
+
+```bash
+docker compose up -d
+make db:migrate
+# See DEVELOPMENT.md for seed instructions
+make start
+```
+
+**Test user:** `catchthemall` / `catchthemall123` (see [DEVELOPMENT.md](DEVELOPMENT.md#test-user))
 
 ## Data
 
-This repo doesn't include a way to completely load up the DB with all of the
-actual Pokemon data. That's only been loaded into the staging and production
-databases. For testing purposes and to make sure everything is functioning as
-expected, having that data isn't entirely necessary. You should be relying on
-tests and factories instead of the database state.
+This fork includes complete seed scripts to load all Pokemon data locally. See `scripts/` for:
+- `scripts/local/` - Base Pokemon data scraped from production (1454 Pokemon, all dex types)
+- `scripts/mega-*.sql` - Legends Z-A and Mega Evolution data (93 megas + 2 primals)
+- `scripts/seed-test-user.sql` - Test user with all 27 dex types
 
 ## Docker
 

@@ -1,6 +1,13 @@
 -- Test user 'catchthemall' with all dex types
 -- Password: catchthemall123
 -- Generated for local development and demo purposes
+--
+-- To generate a custom password hash:
+--   htpasswd -nbBC 10 '' 'your-password' | cut -d: -f2
+--
+-- WARNING: For production deployments, either:
+--   1. Do not run this seed script
+--   2. Or change the password hash below to a secure value
 
 -- 1. Create test user
 INSERT INTO users (username, password, date_created, date_modified)
@@ -147,6 +154,11 @@ BEGIN
   -- HOME Gigantamax + Mega Evolution Forms
   INSERT INTO dexes (user_id, title, slug, shiny, game_id, dex_type_id, regional, date_created, date_modified)
   VALUES (v_user_id, 'HOME All Forms', 'home-all-forms', false, 'home', 27, false, NOW(), NOW())
+  ON CONFLICT (user_id, slug) DO NOTHING;
+
+  -- HOME All Forms (Shiny Living Dex)
+  INSERT INTO dexes (user_id, title, slug, shiny, game_id, dex_type_id, regional, date_created, date_modified)
+  VALUES (v_user_id, 'HOME Shiny Living Dex', 'home-shiny', true, 'home', 27, false, NOW(), NOW())
   ON CONFLICT (user_id, slug) DO NOTHING;
 
 END $$;
