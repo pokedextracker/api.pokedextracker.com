@@ -1,5 +1,9 @@
 # api.pokedextracker.com
 
+> **This repository is archived.** pokedextracker.com is now one repository,
+> [pokedextracker/pokedextracker.com](https://github.com/pokedextracker/pokedextracker.com),
+> which holds the frontend, the API, and how it's deployed.
+
 [![CircleCI](https://circleci.com/gh/pokedextracker/api.pokedextracker.com.svg?style=shield)](https://circleci.com/gh/pokedextracker/api.pokedextracker.com)
 
 The API for [pokedextracker.com](http://pokedextracker.com). 
